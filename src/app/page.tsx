@@ -1,6 +1,7 @@
 import { Navigation } from '@/components/Navigation'
 import { TitleSlide } from '@/components/TitleSlide'
 import { RoastSlide } from '@/components/RoastSlide'
+import { ContactSection } from '@/components/ContactSection'
 import { fetchAllRoastPlayerStats, parseRoastPlayers } from '@/api/riot/roster'
 
 function initialsOf(name: string): string {
@@ -56,9 +57,8 @@ export default async function Home() {
         <RoastSlide players={players} />
       </div>
 
-      <div className="relative flex justify-center py-6 font-mono text-[0.6875rem] text-white/30 tracking-[0.08em] uppercase">
-        4Hope &copy; 2026
-      </div>
+      <ContactSection discordUrl={discordUrl} />
+
     </>
   )
 }

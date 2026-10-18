@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Footer } from '@/components/Footer'
 import { AuthProvider } from '@/components/AuthProvider'
 import { ToastProvider } from '@/components/ui/ToastProvider'
 import './globals.css'
@@ -45,6 +46,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <ToastProvider>{children}</ToastProvider>
+          <Footer />
         </AuthProvider>
         <Analytics />
         <SpeedInsights />

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
-import { LogIn, LogOut, Menu, User, X } from 'lucide-react'
+import { LogOut, Menu, User, UserPlus, X } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 
 interface NavLink {
@@ -23,6 +23,7 @@ const LINKS: NavLink[] = [
   { label: 'Home', href: '/#home' },
   { label: 'Roster', href: '/#roster' },
   { label: 'Lobbies', href: '/lobbies' },
+  { label: 'Contact', href: '/#contact' },
 ]
 
 function DiscordIcon() {
@@ -198,10 +199,10 @@ export function Navigation({ discordUrl }: NavigationProps) {
         ) : (
           <Link
             href="/login"
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-2 font-display text-sm font-bold uppercase tracking-[0.04em] text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+            className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 font-display text-sm font-bold uppercase tracking-[0.04em] text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:flex"
           >
-            <LogIn size={18} />
-            <span className="hidden sm:inline">Join us</span>
+            <UserPlus size={18} />
+            Sign up
           </Link>
         )}
 
@@ -233,7 +234,19 @@ export function Navigation({ discordUrl }: NavigationProps) {
               </a>
             )
           })}
-          <div className="mt-3 border-t border-white/10 pt-3">{meetTheSquadButtonMobile}</div>
+          <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
+            {!isSignedIn && (
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-3 font-display text-sm font-extrabold uppercase tracking-wide text-white no-underline transition-colors hover:bg-white/10"
+              >
+                <UserPlus size={18} />
+                Sign up
+              </Link>
+            )}
+            {meetTheSquadButtonMobile}
+          </div>
         </div>
       )}
     </header>
