@@ -98,7 +98,7 @@ export default function LeaderboardLobbyPage() {
   const [leaveError, setLeaveError] = React.useState<string | null>(null);
 
   const { state, setState, people, setPeople, meta, status, loaded, closed, canEdit, setLobbyStatus, updateMeta, refetch, flushWrite, hasPendingWrite } = useLeaderboardLobby(
-    lobbyId, editToken, React.useMemo(defaultLobbyState, []),
+    lobbyId, editToken, React.useMemo(() => defaultLobbyState(), []),
   );
   const {
     roundCount, scores, order, prizeTiers,

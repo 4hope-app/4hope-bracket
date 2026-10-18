@@ -36,7 +36,10 @@ export default function TermsPage() {
           heading: 'Lobbies',
           body: (
             <>
-              <p>Lobbies are created and run by players, not by 4Hope. The host decides who joins and records the scores.</p>
+              <p>
+                Lobbies are created and run by players, not by 4Hope. The host decides who joins and records the scores.
+                Each lobby&apos;s rules are set by its host, so check the lobby description before you join.
+              </p>
               <ul>
                 <li>Only add players who agreed to take part. Players can ask to be removed at any time.</li>
                 <li>Record real results. Fake or edited scores are not okay.</li>
