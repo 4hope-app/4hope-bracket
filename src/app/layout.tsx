@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
+import { Archivo, Inter, Roboto_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Footer } from '@/components/Footer'
 import { AuthProvider } from '@/components/AuthProvider'
 import { ToastProvider } from '@/components/ui/ToastProvider'
 import './globals.css'
+
+// Self-hosted at build time so visitors' browsers never call Google Fonts.
+const archivo = Archivo({ subsets: ['latin', 'latin-ext'], variable: '--font-archivo', display: 'swap' })
+const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-inter', display: 'swap' })
+const robotoMono = Roboto_Mono({ subsets: ['latin', 'latin-ext'], variable: '--font-roboto-mono', display: 'swap' })
 
 export const metadata: Metadata = {
   title: '4Hope — Play For Keeps',
@@ -33,14 +39,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${archivo.variable} ${inter.variable} ${robotoMono.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
         <meta name="theme-color" content="#0c0c0d" />
       </head>
       <body>
