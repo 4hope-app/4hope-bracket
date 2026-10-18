@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { LegalPage } from '@/components/LegalPage'
+import { TERMS_UPDATED_LABEL } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Privacy — 4Hope',
@@ -13,7 +14,7 @@ export default function PrivacyPage() {
     <LegalPage
       kicker="// privacy"
       title="Your data, plain and simple"
-      updated="October 18, 2026"
+      updated={TERMS_UPDATED_LABEL}
       intro={
         <p>
           4Hope is a hobby project run by players. We keep only what the site needs to work, we don&apos;t sell it, and
@@ -41,7 +42,8 @@ export default function PrivacyPage() {
               </li>
               <li>
                 <strong>Lobbies:</strong> the lobbies you create, with the names and Riot IDs the host types in for
-                participants, and the scores they record.
+                participants, and the scores they record. When you join a lobby, we store your player name, Riot ID and
+                the email of your account in that lobby.
               </li>
             </ul>
           ),
@@ -54,14 +56,18 @@ export default function PrivacyPage() {
                 <strong>Google:</strong> sign-in. You can revoke 4Hope&apos;s access any time from your Google account.
               </li>
               <li>
+                <strong>Lobby hosts:</strong> the host of a lobby you join can see your player name, Riot ID and the
+                email of your account, and can contact you about that lobby.
+              </li>
+              <li>
                 <strong>Riot Games:</strong> we query their API for rank and icon data.
               </li>
               <li>
                 <strong>Google Cloud (Firestore):</strong> where we store the data above.
               </li>
               <li>
-                <strong>Vercel:</strong> hosting, plus anonymous visit and speed statistics that don&apos;t use cookies
-                or identify you.
+                <strong>Vercel:</strong> hosting, plus anonymous visit and speed statistics (page visited, country,
+                device, browser and load times) that use no tracking cookies and can&apos;t identify you.
               </li>
             </ul>
           ),
@@ -72,8 +78,9 @@ export default function PrivacyPage() {
           body: (
             <>
               <p>
-                We use one cookie: the session cookie that keeps you signed in. The site also uses your browser&apos;s
-                session storage for lobby functionality; it clears when you close the tab.
+                We only use cookies that are strictly necessary: the session cookie that keeps you signed in, plus a few
+                short-lived security cookies our sign-in system sets while you log in. The site also uses your
+                browser&apos;s session storage for lobby functionality; it clears when you close the tab.
               </p>
               <p>
                 No advertising, no tracking pixels, no third-party analytics cookies. Fonts are served from our own

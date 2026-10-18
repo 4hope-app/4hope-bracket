@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { LegalPage } from '@/components/LegalPage'
+import { TERMS_UPDATED_LABEL } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Terms — 4Hope',
@@ -15,7 +16,7 @@ export default function TermsPage() {
     <LegalPage
       kicker="// terms"
       title="Ground rules"
-      updated="October 18, 2026"
+      updated={TERMS_UPDATED_LABEL}
       intro={
         <p>
           4Hope is a hobby project for a gaming crew. By using the site you agree to these basics. Keep it fair, keep it
@@ -42,6 +43,10 @@ export default function TermsPage() {
               </p>
               <ul>
                 <li>Only add players who agreed to take part. Players can ask to be removed at any time.</li>
+                <li>
+                  Hosts can see the email of players who join. Use it only to organize that lobby, never to spam or
+                  share it.
+                </li>
                 <li>Record real results. Fake or edited scores are not okay.</li>
                 <li>Hosts can remove players who cheat or break the rules of their lobby.</li>
                 <li>Be respectful in names, descriptions and chat. No harassment or hate.</li>

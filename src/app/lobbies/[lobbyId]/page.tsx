@@ -186,19 +186,39 @@ export default function LeaderboardLobbyPage() {
   const isAuthor = canEdit || (meta?.authorSessionId === sessionId) || (Boolean(myUserId) && meta?.ownerUserId === myUserId);
   const alreadyParticipant = Boolean(myUserId && people.some((p) => p.userId === myUserId));
 
+  // Fills the Host settings form from the lobby's current values and opens it.
+  // Done on open (not from an effect) so a background refetch can't wipe what
+  // the host is typing.
+  const openHostSettings = () => {
+    if (meta) {
+      setEditError(null);
+      setHostEditStep(1);
+      setEditName(meta.name);
+      setEditServerChoice((meta.riotServer as RiotServer) || (meta.region === "Global" ? GLOBAL_SERVER : ""));
+      setEditLimit(meta.limit ? String(meta.limit) : "");
+      setEditScheduledAt(toLocalDatetimeInput(meta.scheduledStartTime));
+      setEditDescription(meta.description ?? "");
+      setEditPrizeTiers(prizeTiers);
+    }
+    setHostSettingsOpen(true);
+  };
+
   // A "My lobbies" row's Edit button links here with ?edit=1 so the host
   // lands straight in Host settings instead of the info page first.
-  const autoOpenedEditRef = React.useRef(false);
+  const [editParamHandled, setEditParamHandled] = React.useState(false);
+  if (!editParamHandled && searchParams.get("edit") === "1" && isAuthor) {
+    setEditParamHandled(true);
+    openHostSettings();
+  }
+  const editUrlCleanedRef = React.useRef(false);
   React.useEffect(() => {
-    if (autoOpenedEditRef.current) return;
-    if (searchParams.get("edit") !== "1" || !isAuthor) return;
-    autoOpenedEditRef.current = true;
-    setHostSettingsOpen(true);
+    if (!editParamHandled || editUrlCleanedRef.current) return;
+    editUrlCleanedRef.current = true;
     const next = new URLSearchParams(searchParams.toString());
     next.delete("edit");
     const qs = next.toString();
     router.replace(qs ? `/lobbies/${lobbyId}?${qs}` : `/lobbies/${lobbyId}`, { scroll: false });
-  }, [isAuthor, searchParams, router, lobbyId]);
+  }, [editParamHandled, searchParams, router, lobbyId]);
   // people isn't refetched after a self-service leave, so drop ourselves from
   // the displayed roster optimistically until the next full page load.
   const visibleParticipants = hasLeft ? people.filter((p) => p.userId !== myUserId) : people;
@@ -389,18 +409,6 @@ export default function LeaderboardLobbyPage() {
     }
     setReviewingUserId(null);
   };
-
-  React.useEffect(() => {
-    if (!hostSettingsOpen || !meta) return;
-    setEditError(null);
-    setHostEditStep(1);
-    setEditName(meta.name);
-    setEditServerChoice((meta.riotServer as RiotServer) || (meta.region === "Global" ? GLOBAL_SERVER : ""));
-    setEditLimit(meta.limit ? String(meta.limit) : "");
-    setEditScheduledAt(toLocalDatetimeInput(meta.scheduledStartTime));
-    setEditDescription(meta.description ?? "");
-    setEditPrizeTiers(prizeTiers);
-  }, [hostSettingsOpen, meta]);
 
   const saveHostSettings = async () => {
     setEditSaving(true);
@@ -768,7 +776,7 @@ export default function LeaderboardLobbyPage() {
                 <Button variant="subtle" size="sm" className="flex-1 justify-center sm:flex-none" iconLeft={<BarChart2 size={15} />} onClick={() => setBoardView(true)}>
                   Leaderboard
                 </Button>
-                <Button variant="subtle" size="sm" className="flex-1 justify-center sm:flex-none" iconLeft={<Settings size={15} />} onClick={() => setHostSettingsOpen(true)}>
+                <Button variant="subtle" size="sm" className="flex-1 justify-center sm:flex-none" iconLeft={<Settings size={15} />} onClick={openHostSettings}>
                   Host settings
                 </Button>
               </div>
