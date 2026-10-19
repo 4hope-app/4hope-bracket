@@ -9,7 +9,7 @@ import {
 } from "@/components/ui";
 import { createLobby, getSessionId, LobbyMeta } from "@/lib/useLeaderboardLobby";
 import { RIOT_SERVERS, type RiotServer } from "@/api/riot/account";
-import { defaultLobbyState, emptyLobbyState } from "./shared";
+import { emptyLobbyState } from "./shared";
 import { DateTimePicker, LobbyEssentialsFields, GLOBAL_SERVER, regionForServerChoice, type ServerChoice } from "./LobbyFormFields";
 
 const MIN_SCHEDULE_LEAD_MINUTES = 30;

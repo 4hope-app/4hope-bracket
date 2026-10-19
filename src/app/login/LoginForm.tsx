@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
@@ -35,7 +36,7 @@ export function LoginForm() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/logo.png" alt="4Hope" className="h-14" />
           <h1 className="text-center font-display text-[22px] font-black uppercase tracking-[-0.02em] text-white">
-            Sign in to 4Hope
+            Sign up or sign in
           </h1>
           <p className="text-center text-sm text-white/60">Your squad, your stats, your matches — all in one place.</p>
         </div>
@@ -53,7 +54,15 @@ export function LoginForm() {
         </Button>
 
         <p className="mt-6 text-center text-xs leading-relaxed text-white/60">
-          Only Gmail accounts can sign in right now. By continuing you agree to the 4Hope Terms and Privacy Policy.
+          Only Gmail accounts can sign in right now. By continuing you agree to the 4Hope{' '}
+          <Link href="/terms" className="text-white underline underline-offset-4 hover:text-gold-500">
+            Terms
+          </Link>{' '}
+          and{' '}
+          <Link href="/privacy" className="text-white underline underline-offset-4 hover:text-gold-500">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </Card>
     </div>
