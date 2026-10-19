@@ -13,6 +13,9 @@ const inter = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-inter',
 const robotoMono = Roboto_Mono({ subsets: ['latin', 'latin-ext'], variable: '--font-roboto-mono', display: 'swap' })
 
 export const metadata: Metadata = {
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   title: '4Hope — Play For Keeps',
   description: "We're a gaming crew built on good vibes, camaraderie, and a little luck.",
   icons: {
