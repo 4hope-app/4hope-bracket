@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
-@theme {
+@theme inline {
   --color-ink-1000: #0C0C0D;
   --color-ink-900: #141416;
   --color-ink-800: #1c1c1f;
   --color-ink-700: #26262a;
   --color-gold-500: #F2C200;
   --color-gold-400: #facc2e;
-  --font-display: "Archivo", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-  --font-mono: "Roboto Mono", monospace;
-  --font-brand: "TT Bluescreens Trial", "Archivo", system-ui, sans-serif;
+  --font-display: var(--font-archivo), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-roboto-mono), monospace;
+  --font-brand: "TT Bluescreens Trial", var(--font-archivo), system-ui, sans-serif;
 }
 
 @keyframes dialog-shake {
@@ -39,6 +39,7 @@ body {
   --ink-700: #26262a;
   --ink-1000: #0c0c0d;
   --gold-500: #f2c200;
-  --family-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "Roboto Mono", monospace;
+  --family-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-archivo), system-ui, sans-serif;
+  --font-mono: var(--font-roboto-mono), monospace;
 }
