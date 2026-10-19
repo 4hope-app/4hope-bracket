@@ -23,7 +23,7 @@ export function RoastSlide({
 }: RoastSlideProps) {
   return (
     <section className="relative isolate w-full overflow-hidden bg-ink-1000 px-8 py-20 sm:px-20">
-      <div className="pointer-events-none absolute -right-24 -top-10 h-8 w-[220px] -rotate-[32deg] rounded-md bg-gold-500 sm:-right-16 sm:-top-4 sm:h-12 sm:w-[360px]" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-10 h-8 w-[220px] -rotate-[32deg] rounded-md bg-gold-500 sm:-right-16 sm:-top-4 sm:h-12 sm:w-[360px]" />
 
       <span className="relative font-mono text-lg uppercase tracking-[0.16em] text-gold-500">{kicker}</span>
 

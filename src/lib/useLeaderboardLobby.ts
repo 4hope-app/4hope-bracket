@@ -164,6 +164,16 @@ export function useLeaderboardLobby(
   const [loaded, setLoaded] = useState(false);
   const [closed, setClosed] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
+  // Switching to another lobby (or edit token) starts a fresh load, so reset the
+  // load flags during render rather than from the load effect itself.
+  const loadKey = `${lobbyId}::${editToken ?? ""}`;
+  const [prevLoadKey, setPrevLoadKey] = useState(loadKey);
+  if (prevLoadKey !== loadKey) {
+    setPrevLoadKey(loadKey);
+    setLoaded(false);
+    setClosed(false);
+    setCanEdit(false);
+  }
   const closedRef = useRef(false);
   // Counts writes that have been fired but not yet confirmed by the server —
   // flushWrite is fire-and-forget, so a caller clearing its own "dirty" flag
@@ -217,9 +227,6 @@ export function useLeaderboardLobby(
     let cancelled = false;
     let scheduleTimer: ReturnType<typeof setTimeout> | null = null;
     closedRef.current = false;
-    setLoaded(false);
-    setClosed(false);
-    setCanEdit(false);
 
     const load = async () => {
       const { data, isEditor } = await fetchLobby(lobbyId, editToken);

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { CheckCircle2, Loader2, Pencil } from 'lucide-react'
@@ -26,6 +27,7 @@ export function RegisterForm() {
   const [account, setAccount] = useState<Account | null>(null)
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [agreed, setAgreed] = useState(false)
   const [status, setStatus] = useState<'loading' | 'idle' | 'saving'>('loading')
   const [error, setError] = useState<string | null>(null)
   const photo = useImageCropFlow(null)
@@ -52,7 +54,7 @@ export function RegisterForm() {
   }, [router])
 
   const usernameValid = /^[A-Za-z0-9_-]{1,24}$/.test(username)
-  const canSubmit = usernameValid && status === 'idle'
+  const canSubmit = usernameValid && agreed && status === 'idle'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,6 +68,7 @@ export function RegisterForm() {
         body: JSON.stringify({
           username,
           displayName,
+          acceptedTerms: agreed,
           ...(photo.image && photo.image !== account?.picture ? { photoDataUrl: photo.image } : {}),
         }),
       })
@@ -147,6 +150,26 @@ export function RegisterForm() {
               maxLength={40}
             />
           </FormField>
+
+          <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-snug text-white/70">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-gold-500"
+            />
+            <span>
+              I agree to the 4Hope{' '}
+              <Link href="/terms" target="_blank" className="text-white underline underline-offset-4 hover:text-gold-500">
+                Terms
+              </Link>{' '}
+              and{' '}
+              <Link href="/privacy" target="_blank" className="text-white underline underline-offset-4 hover:text-gold-500">
+                Privacy Policy
+              </Link>
+              .
+            </span>
+          </label>
 
           <Button
             type="submit"

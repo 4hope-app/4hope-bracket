@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { TERMS_VERSION } from "@/lib/legal";
 import { FieldValue } from "firebase-admin/firestore";
 import { auth } from "@/lib/auth";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
@@ -41,9 +42,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
 
-  const { username, displayName, photoDataUrl } = await request.json();
+  const { username, displayName, photoDataUrl, acceptedTerms } = await request.json();
   if (!username || typeof username !== "string" || !/^[A-Za-z0-9_-]{1,24}$/.test(username)) {
     return NextResponse.json({ error: "Invalid username" }, { status: 400 });
+  }
+  if (acceptedTerms !== true) {
+    return NextResponse.json({ error: "You need to accept the Terms and Privacy Policy." }, { status: 400 });
   }
 
   const usersCol = getAdminDb().collection(envCollection("users"));
@@ -69,6 +73,8 @@ export async function POST(request: Request) {
         ...(customBytes ? { bytes: customBytes, currentBytes: customBytes } : {}),
       },
       createdAt: new Date().toISOString(),
+      termsAcceptedAt: new Date().toISOString(),
+      termsVersion: TERMS_VERSION,
       // New accounts start on the free "basic" plan. Guarded so re-submitting this
       // form never downgrades an account that's since been upgraded to a paid plan.
       ...(existing.data()?.plan ? {} : { plan: "basic" }),

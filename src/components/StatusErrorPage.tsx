@@ -28,7 +28,7 @@ interface StatusErrorPageProps {
 /** Shared full-bleed status page (404, 500, etc.) with the standard nav/hero/footer chrome. */
 export function StatusErrorPage({ discordUrl = '', kicker, code, heading, description, actions, links }: StatusErrorPageProps) {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-ink-1000 text-white">
+    <div className="relative flex min-h-[calc(100vh-4.5rem)] flex-col overflow-hidden bg-ink-1000 text-white">
       <Navigation discordUrl={discordUrl} />
 
       <main className="relative flex flex-1 items-center overflow-hidden px-10 py-6">
@@ -91,10 +91,6 @@ export function StatusErrorPage({ discordUrl = '', kicker, code, heading, descri
         </div>
       </main>
 
-      <footer className="relative flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-white/[0.02] px-10 py-3.5">
-        <span className="whitespace-nowrap font-mono text-[11px] tracking-[0.1em] text-white/38">4HOPE.GG</span>
-        <span className="font-mono text-[11px] tracking-[0.16em] text-white/28">FOUR TITLES. ONE SQUAD.</span>
-      </footer>
     </div>
   )
 }
