@@ -37,9 +37,12 @@ function mailto(subject: string, body: string) {
 
 interface ContactSectionProps {
   discordUrl: string
+  discordSupportUrl?: string
 }
 
-export function ContactSection({ discordUrl }: ContactSectionProps) {
+export function ContactSection({ discordUrl, discordSupportUrl }: ContactSectionProps) {
+  const discordHref = discordSupportUrl || discordUrl
+
   return (
     <section id="contact" className="relative isolate w-full scroll-mt-16 overflow-hidden bg-ink-1000 px-8 py-20 sm:px-20">
       <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-10 h-8 w-[220px] -rotate-[32deg] rounded-md bg-gold-500 sm:-right-16 sm:-top-4 sm:h-12 sm:w-[360px]" />
@@ -53,11 +56,11 @@ export function ContactSection({ discordUrl }: ContactSectionProps) {
         <p className="mt-6 max-w-[560px] text-white/70">
           Pick what you need and your email app opens with the details ready to fill in.
         </p>
-        {discordUrl ? (
+        {discordHref ? (
           <p className="mt-3 text-sm text-white/60">
             Not an email person?{' '}
             <a
-              href={discordUrl}
+              href={discordHref}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-1 py-2 text-white underline-offset-4 hover:text-gold-500 hover:underline"

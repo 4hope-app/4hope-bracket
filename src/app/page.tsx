@@ -13,6 +13,7 @@ function initialsOf(name: string): string {
 
 export default async function Home() {
   const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL ?? ''
+  const discordSupportUrl = process.env.NEXT_PUBLIC_DISCORD_SUPPORT_URL ?? ''
   const teamDescription = process.env.TEAM_DESCRIPTION ?? ''
   const heroKicker = process.env.HERO_KICKER
   const heroHeading: [string, string] = [
@@ -57,7 +58,7 @@ export default async function Home() {
         <RoastSlide players={players} />
       </div>
 
-      <ContactSection discordUrl={discordUrl} />
+      <ContactSection discordUrl={discordUrl} discordSupportUrl={discordSupportUrl} />
 
     </>
   )
