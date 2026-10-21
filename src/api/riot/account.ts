@@ -32,6 +32,18 @@ const ROUTING_REGION_TO_LABEL: Record<string, string> = {
   asia: "APAC",
 };
 
+const ROUTING_REGION_TO_ZONE: Record<string, string> = {
+  americas: "AMER",
+  europe: "EMEA",
+  asia: "APAC",
+};
+
+/** The broad zone tag (AMER/EMEA/APAC) a Riot server rolls up into, "" for an unknown value — lets "AMER" match NA/BR/LAN/LAS rows. */
+export function zoneForServer(server: string): string {
+  const entry = RIOT_SERVERS.find((s) => s.value === server);
+  return entry ? ROUTING_REGION_TO_ZONE[entry.routingRegion] ?? "" : "";
+}
+
 /** Which display region (Americas/EMEA/APAC) a given Riot server belongs to — the single source of truth, used both client- and server-side so it can't drift out of sync with a per-file copy. */
 export function regionForServer(server: string): string {
   const entry = RIOT_SERVERS.find((s) => s.value === server);

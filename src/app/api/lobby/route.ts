@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
+import { currentHostPhoto } from "@/lib/hostPhoto";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,8 @@ export async function GET(req: NextRequest) {
         region: data.region,
         status: data.status,
         authorName: data.authorName,
-        authorPhotoURL: data.authorPhotoURL ?? null,
+        // The host's current profile photo wins over the copy saved when the lobby was made.
+        authorPhotoURL: (typeof data.ownerUserId === "string" ? await currentHostPhoto(data.ownerUserId) : null) ?? data.authorPhotoURL ?? null,
         scheduledStartTime: data.scheduledStartTime ?? null,
         participantCount: Array.isArray(data.people) ? data.people.length : 0,
         limit: typeof data.limit === "number" ? data.limit : null,

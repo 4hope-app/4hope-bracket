@@ -14,14 +14,20 @@ import {
   useLeaderboardLobby, LeaderboardLobbyState, LobbyPerson, getSessionId,
   joinLobby, leaveLobby, setParticipantApproval,
 } from "@/lib/useLeaderboardLobby";
-import { type RiotServer } from "@/api/riot/account";
+import { RIOT_SERVERS, zoneForServer, type RiotServer } from "@/api/riot/account";
 import { POINTS_SCALE, ENTRY_MODE, defaultLobbyState, previewPlayers } from "../shared";
 import {
   DateTimePicker, LobbyEssentialsFields, SearchableSelect, GLOBAL_SERVER, SORTED_RIOT_SERVERS,
-  regionForServer, regionForServerChoice, type ServerChoice,
+  regionForServer, type ServerChoice,
 } from "../LobbyFormFields";
 
-const REGION_SUGGESTIONS = ["Americas", "APAC", "EMEA", "Global"];
+// Specific servers first, then the broad zones. The input still accepts free text.
+const REGION_OPTIONS = [
+  ...RIOT_SERVERS.map((s) => ({ value: s.value, label: s.label, group: "Servers" })),
+  { value: "AMER", label: "Americas", group: "Zones" },
+  { value: "EMEA", label: "Europe, Middle East & Africa", group: "Zones" },
+  { value: "APAC", label: "Asia-Pacific", group: "Zones" },
+];
 
 const STATUS_SCHEME = { open: "positive", live: "brand", ended: "neutral" } as const;
 const STATUS_LABEL = { open: "OPEN", live: "LIVE", ended: "ENDED" } as const;
@@ -74,7 +80,7 @@ export default function LeaderboardLobbyPage() {
   const [confirmResetOpen, setConfirmResetOpen] = React.useState(false);
   const [starting, setStarting] = React.useState(false);
   const [nameFilter, setNameFilter] = React.useState("");
-  const [regionFilter, setRegionFilter] = React.useState("");
+  const [serverFilter, setServerFilter] = React.useState("");
   const [joining, setJoining] = React.useState(false);
   const [joined, setJoined] = React.useState(false);
   const [joinError, setJoinError] = React.useState<string | null>(null);
@@ -85,6 +91,7 @@ export default function LeaderboardLobbyPage() {
   const [hostSettingsOpen, setHostSettingsOpen] = React.useState(false);
   const [editName, setEditName] = React.useState("");
   const [editServerChoice, setEditServerChoice] = React.useState<ServerChoice>("");
+  const [editRegion, setEditRegion] = React.useState("");
   const [editLimit, setEditLimit] = React.useState("");
   const [editScheduledAt, setEditScheduledAt] = React.useState("");
   const [editDescription, setEditDescription] = React.useState("");
@@ -194,7 +201,11 @@ export default function LeaderboardLobbyPage() {
       setEditError(null);
       setHostEditStep(1);
       setEditName(meta.name);
-      setEditServerChoice((meta.riotServer as RiotServer) || (meta.region === "Global" ? GLOBAL_SERVER : ""));
+      // A null riotServer means "any server", so it round-trips as Global; the stored
+      // region only counts as an override when it differs from what that pick implies.
+      const serverChoice = (meta.riotServer as RiotServer) || GLOBAL_SERVER;
+      setEditServerChoice(serverChoice);
+      setEditRegion(meta.region ?? "");
       setEditLimit(meta.limit ? String(meta.limit) : "");
       setEditScheduledAt(toLocalDatetimeInput(meta.scheduledStartTime));
       setEditDescription(meta.description ?? "");
@@ -229,6 +240,10 @@ export default function LeaderboardLobbyPage() {
     const bHost = Boolean(b.userId) && b.userId === meta?.ownerUserId;
     return aHost === bHost ? 0 : aHost ? -1 : 1;
   });
+  // The host can add board rows past the configured limit, so the shown total grows with the
+  // roster and falls back to the configured limit as rows are removed. The saved limit is
+  // untouched — it's still what caps join requests.
+  const capacityLabel = meta?.limit ? `${displayParticipants.length} / ${Math.max(meta.limit, displayParticipants.length)}` : `${displayParticipants.length}`;
 
   // Before the host has added any real board rows, show an illustrative demo
   // roster — a pure display fallback, never written to `people` until the
@@ -239,16 +254,16 @@ export default function LeaderboardLobbyPage() {
   const isPreviewBoard = isAuthor && status === "open";
   const demoPreviewPlayers = React.useMemo(() => previewPlayers(), []);
   const realBoardPlayers = React.useMemo(
-    () => people.filter((p) => p.isPlayer).map((p) => ({ id: p.id, name: p.name, region: p.region ?? "" })),
+    () => people.filter((p) => p.isPlayer).map((p) => ({ id: p.id, name: p.name, server: p.server ?? p.region ?? "" })),
     [people],
   );
   const usingDemoFallback = isPreviewBoard && realBoardPlayers.length === 0;
   const boardPlayers = usingDemoFallback ? demoPreviewPlayers : realBoardPlayers;
 
   const q = nameFilter.trim().toLowerCase();
-  const rq = regionFilter.trim().toLowerCase();
+  const sq = serverFilter.trim().toLowerCase();
   const visiblePlayers = boardPlayers.filter(
-    (p) => (!q || p.name.toLowerCase().includes(q)) && (!rq || (p.region || "").toLowerCase().includes(rq))
+    (p) => (!q || p.name.toLowerCase().includes(q)) && (!sq || (p.server || "").toLowerCase().includes(sq) || zoneForServer(p.server || "").toLowerCase().includes(sq))
   );
 
   const addPlayer = () => {
@@ -258,7 +273,7 @@ export default function LeaderboardLobbyPage() {
       id: "p" + rawId,
       sessionId: rawId,
       name: `PLAYER ${boardCount + 1}`,
-      region: "",
+      server: "",
       approvalStatus: "approved",
       isPlayer: true,
     };
@@ -414,14 +429,14 @@ export default function LeaderboardLobbyPage() {
     setEditSaving(true);
     setEditError(null);
     const limitNumber = Number(editLimit);
-    if (!editName.trim() || !editServerChoice || !Number.isFinite(limitNumber) || limitNumber < 2) {
+    if (!editName.trim() || !editServerChoice || !editRegion.trim() || !Number.isFinite(limitNumber) || limitNumber < 2) {
       setEditError("Fill in all required fields.");
       setEditSaving(false);
       return;
     }
     const result = await updateMeta({
       name: editName.trim(),
-      region: regionForServerChoice(editServerChoice),
+      region: editRegion.trim(),
       riotServer: editServerChoice === GLOBAL_SERVER ? null : editServerChoice || null,
       limit: limitNumber,
       scheduledStartTime: editScheduledAt ? new Date(editScheduledAt).toISOString() : null,
@@ -613,7 +628,7 @@ export default function LeaderboardLobbyPage() {
     setEditPrizeTiers((tiers) => (Number.isFinite(editLimitNumber) && tiers.length >= editLimitNumber ? tiers : [...tiers, ""]));
   const removePrizeTier = (index: number) => setEditPrizeTiers((tiers) => tiers.filter((_, i) => i !== index));
 
-  const hostEditStep1Valid = Boolean(editName.trim()) && Boolean(editServerChoice) && Number.isFinite(Number(editLimit)) && Number(editLimit) >= 2;
+  const hostEditStep1Valid = Boolean(editName.trim()) && Boolean(editServerChoice) && Boolean(editRegion.trim()) && Number.isFinite(Number(editLimit)) && Number(editLimit) >= 2;
 
   const hostSettingsModal = (
     <Dialog
@@ -671,6 +686,8 @@ export default function LeaderboardLobbyPage() {
                   onLimitChange={setEditLimit}
                   server={editServerChoice}
                   onServerChange={setEditServerChoice}
+                  region={editRegion}
+                  onRegionChange={setEditRegion}
                   game={meta?.game ?? "TFT"}
                 />
                 <FormField label="Event date & time" hint="Shown in your local time." className="min-w-0">
@@ -784,9 +801,11 @@ export default function LeaderboardLobbyPage() {
           </div>
 
           <div className="mt-6">
+            {/* On mobile both columns dissolve (`contents`) so every card is a grid item and `order`
+                decides the stack: join/start (when inline), details, description, prizes, then participants last. */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1.6fr_1fr]">
-            <div className="flex flex-col gap-5 min-w-0">
-              <Card tone="arena" className="p-6">
+            <div className="flex flex-col gap-5 min-w-0 max-sm:contents">
+              <Card tone="arena" className="p-6 max-sm:order-3">
                 <span className="font-mono text-xs uppercase tracking-[0.08em] text-white/62">{"// Description"}</span>
                 <Divider className="my-3.5" />
                 {meta?.description ? (
@@ -802,33 +821,16 @@ export default function LeaderboardLobbyPage() {
                 )}
               </Card>
 
-              <Card tone="arena" className="p-6">
-                <span className="font-mono text-xs uppercase tracking-[0.08em] text-white/62">{"// Prizes"}</span>
-                <Divider className="my-3.5" />
-                {prizeTiers.some((t) => t.trim()) ? (
-                  <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
-                    {prizeTiers.map((prize, i) => prize.trim() ? (
-                      <li key={i} className="flex items-center gap-2.5 text-[14.5px] text-white">
-                        <Award size={16} className="shrink-0 text-gold-500" />
-                        <span className="font-mono text-[11.5px] uppercase tracking-[0.04em] text-gold-500">{ordinal(i + 1)}</span>
-                        {prize}
-                      </li>
-                    ) : null)}
-                  </ul>
-                ) : (
-                  <p className="m-0 flex items-center gap-2 text-sm text-white/62">
-                    <Award size={16} className="text-gold-500" /> No prizes for this lobby.
-                  </p>
-                )}
-              </Card>
-
-              <Card tone="arena" className="p-6">
+              {/* Same pinning as Prizes: on desktop both cards fill the row, so their bottom edges line up
+                  and the lists scroll inside instead of stretching the page. */}
+              <div className="relative max-sm:order-5 sm:min-h-[420px] sm:flex-1">
+              <Card tone="arena" className="flex flex-col p-6 sm:absolute sm:left-[0px] sm:top-[0px] sm:h-full sm:w-full">
                 <span className="font-mono text-xs uppercase tracking-[0.08em] text-white/62">
-                  {`// Participants (${displayParticipants.length}${meta?.limit ? `/${meta.limit}` : ""})`}
+                  {`// Participants (${capacityLabel.replace(" / ", "/")})`}
                 </span>
                 <Divider className="my-3.5" />
                 {displayParticipants.length ? (
-                  <div className="flex flex-col gap-2.5">
+                  <div className="flex max-h-[440px] min-h-0 flex-col gap-2.5 overflow-y-auto overscroll-contain pr-2 sm:max-h-none sm:flex-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/25 [&::-webkit-scrollbar-track]:bg-transparent">
                     {displayParticipants.map((p) => {
                       const isHostRow = Boolean(p.userId) && p.userId === meta?.ownerUserId;
                       const isPending = !isHostRow && p.approvalStatus !== "approved";
@@ -894,14 +896,15 @@ export default function LeaderboardLobbyPage() {
                   <p className="m-0 text-sm text-white/62">No one has joined yet — be the first.</p>
                 )}
               </Card>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 max-sm:contents">
               <div
                 className={
                   joinOpen
-                    ? "flex flex-col gap-3"
-                    : "flex flex-col gap-3 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-30 max-sm:border-t max-sm:border-white/10 max-sm:bg-ink-1000/95 max-sm:p-4 max-sm:backdrop-blur-sm"
+                    ? "flex flex-col gap-3 max-sm:order-1"
+                    : "flex flex-col gap-3 max-sm:order-1 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:z-30 max-sm:border-t max-sm:border-white/10 max-sm:bg-ink-1000/95 max-sm:p-4 max-sm:backdrop-blur-sm"
                 }
               >
               <Card tone="arena" className="p-5">
@@ -997,21 +1000,40 @@ export default function LeaderboardLobbyPage() {
                 )}
               </Card>
               {isAuthor && isOpenPhase ? (
-                <Button variant="subtle" size="lg" full iconLeft={<Play size={18} />} onClick={startLobby} disabled={starting}>
+                <Button variant="subtle" size="lg" full className="max-sm:order-1" iconLeft={<Play size={18} />} onClick={startLobby} disabled={starting}>
                   {starting ? "Starting…" : "Start lobby"}
                 </Button>
               ) : null}
               </div>
-              <Card tone="arena" className="flex flex-col gap-4 p-5">
+              <Card tone="arena" className="flex flex-col gap-4 p-5 max-sm:order-2">
                 <MetaItem icon={<Globe size={16} />} label="Region" value={meta?.region || "—"} />
                 <MetaItem icon={<Server size={16} />} label="Riot server" value={meta?.riotServer || (meta?.region === "Global" ? "Global" : "—")} />
                 <MetaItem icon={<Calendar size={16} />} label="Event time" value={fmtDate(meta?.scheduledStartTime ?? null)} />
                 <MetaItem
                   icon={<Users size={16} />}
                   label="Capacity"
-                  value={`${displayParticipants.length}${meta?.limit ? ` / ${meta.limit}` : ""}`}
+                  value={capacityLabel}
                 />
               </Card>
+              {prizeTiers.some((t) => t.trim()) ? (
+                // On desktop the card is pinned to the space left under the details, so its
+                // bottom edge lines up with Participants and a long prize list scrolls inside it.
+                <div className="relative max-sm:order-4 sm:min-h-[220px] sm:flex-1">
+                  <Card tone="arena" className="flex flex-col p-5 sm:absolute sm:left-[0px] sm:top-[0px] sm:h-full sm:w-full">
+                    <span className="font-mono text-xs uppercase tracking-[0.08em] text-white/62">{"// Prizes"}</span>
+                    <Divider className="my-3.5" />
+                    <ul className="m-0 flex max-h-[320px] min-h-0 list-none flex-col gap-2.5 overflow-y-auto overscroll-contain p-0 pr-2 sm:max-h-none sm:flex-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/25 [&::-webkit-scrollbar-track]:bg-transparent">
+                      {prizeTiers.map((prize, i) => prize.trim() ? (
+                        <li key={i} className="flex items-center gap-2.5 text-[14.5px] text-white">
+                          <Award size={16} className="shrink-0 text-gold-500" />
+                          <span className="font-mono text-[11.5px] uppercase tracking-[0.04em] text-gold-500">{ordinal(i + 1)}</span>
+                          {prize}
+                        </li>
+                      ) : null)}
+                    </ul>
+                  </Card>
+                </div>
+              ) : null}
             </div>
             </div>
           </div>
@@ -1194,12 +1216,12 @@ export default function LeaderboardLobbyPage() {
                       // this drops them entirely (same as a host reject).
                       continue;
                     }
-                    const changed = row.name !== person.name || (row.region ?? "") !== (person.region ?? "") || !person.isPlayer;
-                    next.push(changed ? { ...person, name: row.name, region: row.region, isPlayer: true } : person);
+                    const changed = row.name !== person.name || (row.server ?? "") !== (person.server ?? person.region ?? "") || !person.isPlayer;
+                    next.push(changed ? { ...person, name: row.name, server: row.server, isPlayer: true } : person);
                   }
                   // Anything left over came from the demo fallback — brand-new rows.
                   for (const row of editedById.values()) {
-                    next.push({ id: row.id, sessionId: row.id, name: row.name, region: row.region, approvalStatus: "approved", isPlayer: true });
+                    next.push({ id: row.id, sessionId: row.id, name: row.name, server: row.server, approvalStatus: "approved", isPlayer: true });
                   }
                   patchPeople(next);
                 }}
@@ -1209,10 +1231,10 @@ export default function LeaderboardLobbyPage() {
                 rankMode={rankMode} order={order} onOrderChange={(o) => patch({ order: o }, { save: true })}
                 showPrize={showPrize} prizeTiers={prizeTiers} onPrizeTiersChange={(t) => patch({ prizeTiers: t })}
                 nameFilter={nameFilter} onNameFilterChange={setNameFilter}
-                regionFilter={regionFilter} onRegionFilterChange={setRegionFilter}
+                serverFilter={serverFilter} onServerFilterChange={setServerFilter}
                 cutoffRank={cutoffOn ? cutoffRank : null} cutoffLabel={cutoffLabel}
                 readOnly={readOnly || status === "ended" || usingDemoFallback}
-                regionOptions={REGION_SUGGESTIONS}
+                serverOptions={REGION_OPTIONS}
                 onFieldBlur={commitField}
                 onRemovePlayer={
                   readOnly

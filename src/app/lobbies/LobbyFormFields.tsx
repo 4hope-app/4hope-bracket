@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { CalendarIcon } from "lucide-react";
 import { Calendar, FormField, Input, Popover, PopoverContent, PopoverTrigger } from "@/components/ui";
 import { RIOT_SERVERS, regionForServer, type RiotServer } from "@/api/riot/account";
+import { RegionPicker, type RegionOption } from "@/components/data/RegionPicker";
 
 const SORTED_RIOT_SERVERS = [...RIOT_SERVERS].sort((a, b) => a.label.localeCompare(b.label));
 export { SORTED_RIOT_SERVERS, regionForServer };
@@ -15,6 +16,13 @@ export type ServerChoice = RiotServer | typeof GLOBAL_SERVER | "";
 
 /** The single Server select's options: every real Riot server, plus "Global" pinned first. */
 export const SERVER_CHOICES = [{ value: GLOBAL_SERVER, label: "Global — any server" }, ...SORTED_RIOT_SERVERS];
+
+const REGION_OPTIONS: RegionOption[] = [
+  { value: "AMER", label: "Americas", group: "Zones" },
+  { value: "EMEA", label: "Europe, Middle East & Africa", group: "Zones" },
+  { value: "APAC", label: "Asia-Pacific", group: "Zones" },
+  { value: "Global", label: "Open to any region", group: "Zones" },
+];
 
 /** The region implied by a Server-select value — "Global" for the sentinel, "" when nothing's picked yet. */
 export function regionForServerChoice(choice: ServerChoice): string {
@@ -210,6 +218,8 @@ export function LobbyEssentialsFields({
   onLimitChange,
   server,
   onServerChange,
+  region,
+  onRegionChange,
   game = "TFT",
 }: {
   name: string;
@@ -218,9 +228,11 @@ export function LobbyEssentialsFields({
   onLimitChange: (value: string) => void;
   server: ServerChoice;
   onServerChange: (value: ServerChoice) => void;
+  /** Independent of the server pick — nothing here is derived from it. */
+  region: string;
+  onRegionChange: (value: string) => void;
   game?: string;
 }) {
-  const derivedRegion = regionForServerChoice(server);
   return (
     <>
       <FormField label="Lobby name" required>
@@ -240,10 +252,14 @@ export function LobbyEssentialsFields({
         <FormField label="Server" required hint="Pick a server, or Global for no restriction." className="min-w-0 sm:flex-1">
           <SearchableSelect value={server} onChange={(v) => onServerChange(v as ServerChoice)} options={SERVER_CHOICES} placeholder="Select a server" />
         </FormField>
-        <FormField label="Region" hint="Based on the server you picked." className="min-w-0 sm:flex-1">
-          <div className="flex h-[42px] w-full items-center rounded-lg border border-white/15 bg-ink-900 px-3.5 text-[15px] text-white/70">
-            {derivedRegion || "—"}
-          </div>
+        <FormField label="Region" required hint="Pick one or type your own — it doesn't depend on the server." className="min-w-0 sm:flex-1">
+          <RegionPicker
+            variant="field"
+            value={region}
+            options={REGION_OPTIONS}
+            placeholder="Select or type a region"
+            onChange={onRegionChange}
+          />
         </FormField>
       </div>
     </>
