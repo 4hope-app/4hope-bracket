@@ -2,11 +2,13 @@
 
 import React from "react";
 import { Search, X } from "lucide-react";
+import { regionForServer } from "@/api/riot/account";
+import { RegionPicker, type RegionOption } from "./RegionPicker";
 
 export interface LeaderboardPlayer {
   id: string;
   name: string;
-  region?: string;
+  server?: string;
 }
 
 export interface LeaderboardProps {
@@ -28,10 +30,10 @@ export interface LeaderboardProps {
   cutoffLabel?: string;
   nameFilter?: string;
   onNameFilterChange?: (value: string) => void;
-  regionFilter?: string;
-  onRegionFilterChange?: (value: string) => void;
-  /** Autocomplete suggestions offered on the per-row Region input. */
-  regionOptions?: string[];
+  serverFilter?: string;
+  onServerFilterChange?: (value: string) => void;
+  /** Dropdown suggestions for the per-row Region input (stored in `server`): a Riot server like NA/LAN or a zone like AMER. Free text is still allowed. */
+  serverOptions?: RegionOption[];
   /** Removes one row — a discrete action, so (unlike onPlayersChange edits) the caller is expected to save it immediately rather than wait for a blur. Falls back to onPlayersChange if omitted. */
   onRemovePlayer?: (id: string) => void;
   /** Fires on blur of any editable cell — used to commit a pending debounced save right away. */
@@ -55,16 +57,18 @@ const REGION_FALLBACK: [string, string][] = [
   ["#67E8F9", "#022A2E"], ["#F9A8D4", "#2E0620"],
 ];
 
-function regionColor(tag: string | undefined): [string, string] {
+/** Pill color for a server tag: servers share their region's color (NA/BR/LAN/LAS are all Americas); anything else hashes to a fallback. */
+function serverColor(tag: string | undefined): [string, string] {
   if (!tag) return ["rgba(255,255,255,0.10)", "rgba(255,255,255,0.6)"];
-  if (REGION_COLORS[tag.toUpperCase()]) return REGION_COLORS[tag.toUpperCase()];
+  const region = (regionForServer(tag.toUpperCase()) || tag).toUpperCase();
+  if (REGION_COLORS[region]) return REGION_COLORS[region];
   let h = 0;
   for (let i = 0; i < tag.length; i++) h = ((h * 31 + tag.charCodeAt(i)) >>> 0);
   return REGION_FALLBACK[h % REGION_FALLBACK.length];
 }
 
 const mono = "var(--font-mono, 'Roboto Mono', monospace)";
-const COLW = { rank: 40, name: 168, region: 104, total: 74, prize: 104, round: 58 };
+const COLW = { rank: 40, name: 200, server: 104, total: 74, prize: 104, round: 58 };
 
 /** Enter commits a cell the same way tabbing away does — it just blurs, which fires onBlur/onFieldBlur. */
 function blurOnEnter(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -98,16 +102,16 @@ export function Leaderboard({
   cutoffLabel = "QUALIFY",
   nameFilter,
   onNameFilterChange,
-  regionFilter,
-  onRegionFilterChange,
-  regionOptions,
+  serverFilter,
+  onServerFilterChange,
+  serverOptions,
   onRemovePlayer,
   onFieldBlur,
   readOnly = false,
   style = {},
 }: LeaderboardProps) {
   const [nameFilterOpen, setNameFilterOpen] = React.useState(false);
-  const [regionFilterOpen, setRegionFilterOpen] = React.useState(false);
+  const [serverFilterOpen, setServerFilterOpen] = React.useState(false);
 
   const total = (pid: string) => {
     const row = scores[pid] || {};
@@ -173,17 +177,17 @@ export function Leaderboard({
 
   return (
     <div style={{ overflowX: "auto", border: "1px solid rgba(255,255,255,0.10)", borderRadius: 12, ...style }}>
-      {/* Below ~640px, only Rank + Name stay pinned — Region/Pts/Prize joining
+      {/* Below ~640px, only Rank + Name stay pinned — Server/Pts/Prize joining
           the horizontal scroll (instead of all four crowding the sticky-left
           band) is what actually leaves room to see the round columns. */}
       <style>{`
         @media (max-width: 640px) {
           .lb-col-name {
-            width: 140px !important;
-            flex: 0 0 140px !important;
-            min-width: 140px !important;
+            width: 168px !important;
+            flex: 0 0 168px !important;
+            min-width: 168px !important;
           }
-          .lb-col-region, .lb-col-total, .lb-col-prize {
+          .lb-col-server, .lb-col-total, .lb-col-prize {
             position: static !important;
             left: auto !important;
             right: auto !important;
@@ -194,13 +198,6 @@ export function Leaderboard({
           }
         }
       `}</style>
-      {regionOptions && regionOptions.length > 0 && (
-        <datalist id="lb-region-options">
-          {regionOptions.map((r) => (
-            <option key={r} value={r} />
-          ))}
-        </datalist>
-      )}
       <div style={{ width: "max-content", minWidth: "100%" }}>
         {/* Header */}
         <div style={{ display: "flex", background: "var(--ink-900)", borderBottom: "1px solid rgba(255,255,255,0.14)", position: "sticky", top: 0, zIndex: 3 }}>
@@ -228,21 +225,21 @@ export function Leaderboard({
             )}
           </div>
 
-          {/* Region header */}
-          <div className="lb-col-region" style={{ ...headCell(COLW.region), position: "sticky", left: COLW.rank + COLW.name, background: stickyBg, zIndex: 2, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
-            {onRegionFilterChange && regionFilterOpen ? (
+          {/* Server header */}
+          <div className="lb-col-server" style={{ ...headCell(COLW.server), position: "sticky", left: COLW.rank + COLW.name, background: stickyBg, zIndex: 2, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+            {onServerFilterChange && serverFilterOpen ? (
               <>
-                <input autoFocus value={regionFilter || ""} onChange={(e) => onRegionFilterChange(e.target.value)} placeholder="Search region…"
+                <input autoFocus value={serverFilter || ""} onChange={(e) => onServerFilterChange(e.target.value)} placeholder="Search region…"
                   style={{ flex: 1, minWidth: 0, background: "var(--ink-700)", border: "1px solid rgba(255,255,255,0.16)", borderRadius: 5, padding: "3px 6px", color: "#fff", font: "inherit", textTransform: "none", letterSpacing: "normal", fontWeight: 400 }} />
-                <span onClick={() => { onRegionFilterChange(""); setRegionFilterOpen(false); }} title="Clear filter"
+                <span onClick={() => { onServerFilterChange(""); setServerFilterOpen(false); }} title="Clear filter"
                   style={{ cursor: "pointer", color: "rgba(255,255,255,0.55)", fontSize: 13, flex: "none" }}>×</span>
               </>
             ) : (
               <>
                 <span>Region</span>
-                {onRegionFilterChange && (
-                  <span onClick={() => setRegionFilterOpen(true)} title="Filter by region"
-                    style={{ cursor: "pointer", color: regionFilter ? "var(--gold-500)" : "rgba(255,255,255,0.55)", display: "flex", flex: "none" }}>
+                {onServerFilterChange && (
+                  <span onClick={() => setServerFilterOpen(true)} title="Filter by region"
+                    style={{ cursor: "pointer", color: serverFilter ? "var(--gold-500)" : "rgba(255,255,255,0.55)", display: "flex", flex: "none" }}>
                     <Search size={12} />
                   </span>
                 )}
@@ -250,7 +247,7 @@ export function Leaderboard({
             )}
           </div>
 
-          <div className="lb-col-total" style={{ ...headCell(COLW.total), position: "sticky", left: COLW.rank + COLW.name + COLW.region, background: stickyBg, zIndex: 2, color: "var(--gold-500)" }}>Pts</div>
+          <div className="lb-col-total" style={{ ...headCell(COLW.total), position: "sticky", left: COLW.rank + COLW.name + COLW.server, background: stickyBg, zIndex: 2, color: "var(--gold-500)" }}>Pts</div>
 
           {Array.from({ length: roundCount }).map((_, r) => (
             <div key={r} style={{ ...headCell(COLW.round), position: "relative" }}>
@@ -272,7 +269,7 @@ export function Leaderboard({
           const p = players.find((x) => x.id === pid);
           if (!p) return null;
           const rank = idx + 1;
-          const [bg, fg] = regionColor(p.region);
+          const [bg, fg] = serverColor(p.server);
           const qualified = cutoffRank != null && rank <= cutoffRank;
           const rowBg = qualified
             ? "color-mix(in oklch, var(--gold-500) 9%, var(--ink-900))"
@@ -295,10 +292,23 @@ export function Leaderboard({
 
                 {/* Name */}
                 <div className="lb-col-name" style={{ width: COLW.name, flex: `0 0 ${COLW.name}px`, padding: "2px 6px", boxSizing: "border-box", display: "flex", alignItems: "center", gap: 6, position: "sticky", left: COLW.rank, background: rowBg, zIndex: 1 }}>
-                  <input value={p.name} readOnly={readOnly} onChange={(e) => setPlayer(pid, { name: e.target.value })}
-                    onBlur={onFieldBlur}
-                    onKeyDown={blurOnEnter}
-                    style={{ flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none", color: "#fff", fontFamily: "var(--family-sans, Inter, sans-serif)", fontWeight: 600, fontSize: 12.5 }} />
+                  {readOnly ? (
+                    <span title={p.name} style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#fff", fontFamily: "var(--family-sans, Inter, sans-serif)", fontWeight: 600, fontSize: 12.5 }}>
+                      {p.name.includes("#") ? (
+                        <>
+                          {p.name.slice(0, p.name.indexOf("#"))}
+                          <span style={{ color: "rgba(255,255,255,0.5)", fontWeight: 400 }}>{p.name.slice(p.name.indexOf("#"))}</span>
+                        </>
+                      ) : (
+                        p.name
+                      )}
+                    </span>
+                  ) : (
+                    <input value={p.name} title={p.name} onChange={(e) => setPlayer(pid, { name: e.target.value })}
+                      onBlur={onFieldBlur}
+                      onKeyDown={blurOnEnter}
+                      style={{ flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none", color: "#fff", fontFamily: "var(--family-sans, Inter, sans-serif)", fontWeight: 600, fontSize: 12.5 }} />
+                  )}
                   {!readOnly && (onPlayersChange || onRemovePlayer) && (
                     <span onClick={() => removePlayer(pid)} title="Remove player"
                       style={{ cursor: "pointer", color: "rgba(255,255,255,0.55)", display: "flex", flex: "none" }}
@@ -309,17 +319,20 @@ export function Leaderboard({
                   )}
                 </div>
 
-                {/* Region */}
-                <div className="lb-col-region" style={{ width: COLW.region, flex: `0 0 ${COLW.region}px`, padding: "5px 8px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", position: "sticky", left: COLW.rank + COLW.name, background: rowBg, zIndex: 1 }}>
-                  <input value={p.region || ""} placeholder="—" readOnly={readOnly} list={regionOptions?.length ? "lb-region-options" : undefined}
-                    onChange={(e) => setPlayer(pid, { region: e.target.value.slice(0, 20) })}
-                    onBlur={onFieldBlur}
-                    onKeyDown={blurOnEnter}
-                    style={{ width: "100%", textAlign: "center", background: bg, color: fg, border: "none", outline: "none", borderRadius: 5, fontFamily: mono, fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", padding: "3px 2px" }} />
+                {/* Server */}
+                <div className="lb-col-server" style={{ width: COLW.server, flex: `0 0 ${COLW.server}px`, padding: "5px 8px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", position: "sticky", left: COLW.rank + COLW.name, background: rowBg, zIndex: 1 }}>
+                  <RegionPicker
+                    value={p.server || ""}
+                    options={serverOptions ?? []}
+                    colors={[bg, fg]}
+                    readOnly={readOnly}
+                    onChange={(next) => setPlayer(pid, { server: next })}
+                    onCommit={onFieldBlur}
+                  />
                 </div>
 
                 {/* Total */}
-                <div className="lb-col-total" style={{ width: COLW.total, flex: `0 0 ${COLW.total}px`, boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: mono, fontSize: 13.5, fontWeight: 700, color: "var(--gold-500)", position: "sticky", left: COLW.rank + COLW.name + COLW.region, background: rowBg, zIndex: 1 }}>
+                <div className="lb-col-total" style={{ width: COLW.total, flex: `0 0 ${COLW.total}px`, boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: mono, fontSize: 13.5, fontWeight: 700, color: "var(--gold-500)", position: "sticky", left: COLW.rank + COLW.name + COLW.server, background: rowBg, zIndex: 1 }}>
                   {total(pid)}
                 </div>
 

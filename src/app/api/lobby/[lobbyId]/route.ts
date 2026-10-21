@@ -3,6 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { auth } from "@/lib/auth";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
 import { RIOT_SERVERS } from "@/api/riot/account";
+import { currentHostPhoto } from "@/lib/hostPhoto";
 
 export const dynamic = "force-dynamic";
 
@@ -158,6 +159,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ lobb
   void _editToken;
   void _editorSessionIds;
   const publicData: Record<string, unknown> = { ...rest, people: sanitizePeopleForResponse(getPeople(data)) };
+  if (typeof data.ownerUserId === "string") {
+    const hostPhoto = await currentHostPhoto(data.ownerUserId);
+    if (hostPhoto) publicData.authorPhotoURL = hostPhoto;
+  }
 
   // Open-state visibility: non-authors see the roster (`people`) only, not
   // the score table, until the author starts the lobby (status -> "live").
