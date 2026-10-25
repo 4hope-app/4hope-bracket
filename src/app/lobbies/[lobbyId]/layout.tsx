@@ -10,11 +10,14 @@ export async function generateMetadata({ params }: Pick<Props, "params">): Promi
   if (!lobby) return { title: "Lobby", robots: { index: false, follow: false } };
 
   const title = `${lobby.name} — ${lobby.game || "Lobby"} | 4Hope`;
-  const description =
-    lobby.description.slice(0, 160) ||
+  // Lobby's own text first (collapsed, cut at a word boundary), then the generic line so every lobby reads consistently.
+  const own = lobby.description.replace(/\s+/g, " ").trim();
+  const ownShort = own.length > 160 ? `${own.slice(0, 160).replace(/\s+\S*$/, "")}…` : own;
+  const generic =
     [`${lobby.name}: ${lobby.game} lobby`, lobby.region && `in ${lobby.region}`, lobby.authorName && `hosted by ${lobby.authorName}`]
       .filter(Boolean)
       .join(" ") + ". Join the squad and follow the live leaderboard on 4Hope.";
+  const description = ownShort ? `${ownShort} ${generic}` : generic;
   const url = `${getSiteUrl()}/lobbies/${lobby.id}`;
 
   return {
