@@ -4,7 +4,8 @@ import { TERMS_UPDATED_LABEL } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Terms — 4Hope',
-  description: 'The ground rules for using 4Hope and its player-run lobbies.',
+  description:
+    'The ground rules for 4Hope: your account, player-run lobbies, cheating and reports, Riot Games, and the as-is terms.',
 }
 
 const EMAIL = 'hello@4hope.app'
