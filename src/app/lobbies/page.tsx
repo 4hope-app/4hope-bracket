@@ -10,7 +10,7 @@ import {
 import { createLobby, getSessionId, LobbyMeta } from "@/lib/useLeaderboardLobby";
 import { RIOT_SERVERS, type RiotServer } from "@/api/riot/account";
 import { emptyLobbyState } from "./shared";
-import { DateTimePicker, LobbyEssentialsFields, GLOBAL_SERVER, regionForServerChoice, type ServerChoice } from "./LobbyFormFields";
+import { DateTimePicker, LobbyEssentialsFields, GLOBAL_SERVER, type ServerChoice } from "./LobbyFormFields";
 
 const MIN_SCHEDULE_LEAD_MINUTES = 30;
 const MIN_SCHEDULE_LEAD_MS = MIN_SCHEDULE_LEAD_MINUTES * 60_000;
@@ -69,6 +69,7 @@ function LeaderboardDirectory() {
   const [lobbyName, setLobbyName] = React.useState("");
   const [limit, setLimit] = React.useState("8");
   const [serverChoice, setServerChoice] = React.useState<ServerChoice>("");
+  const [region, setRegion] = React.useState("");
   const [scheduledAt, setScheduledAt] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [prizeTiers, setPrizeTiers] = React.useState<string[]>([]);
@@ -154,6 +155,7 @@ function LeaderboardDirectory() {
     setLobbyName("");
     setLimit("8");
     setServerChoice(linkedServer && RIOT_SERVERS.some((s) => s.value === linkedServer) ? linkedServer : "LAN");
+    setRegion("");
     setScheduledAt("");
     setDescription("");
     setPrizeTiers([]);
@@ -199,6 +201,7 @@ function LeaderboardDirectory() {
   const step1Valid =
     Boolean(lobbyName.trim()) &&
     Boolean(serverChoice) &&
+    Boolean(region.trim()) &&
     Number.isFinite(limitNumber) &&
     limitNumber >= 2 &&
     limitNumber <= 200 &&
@@ -258,7 +261,7 @@ function LeaderboardDirectory() {
     const scheduledStartTime = scheduledAt ? new Date(scheduledAt).toISOString() : null;
     const meta: LobbyMeta = {
       name: lobbyName.trim(),
-      region: regionForServerChoice(serverChoice),
+      region: region.trim(),
       authorName: profileJson.profile.displayName,
       authorPhotoURL: profileJson.profile.photoURL ?? null,
       scheduledStartTime,
@@ -400,6 +403,8 @@ function LeaderboardDirectory() {
                 onLimitChange={setLimit}
                 server={serverChoice}
                 onServerChange={setServerChoice}
+                region={region}
+                onRegionChange={setRegion}
               />
               <FormField
                 label="Event date & time"
