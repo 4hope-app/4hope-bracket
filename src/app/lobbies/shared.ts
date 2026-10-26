@@ -6,13 +6,13 @@ export const POINTS_SCALE = [8, 7, 6, 5, 4, 3, 2, 1];
 export const ENTRY_MODE = "points" as const;
 
 const START_NAMES = ["4H Clover", "4H Spade", "4H Ace", "4H Lucky", "4H Jinx", "4H Faker", "4H Blaze", "4H Ghost"];
-const START_REGIONS = ["AMER", "EMEA", "APAC", "CN", "AMER", "EMEA", "APAC", "CN"];
+const START_SERVERS = ["NA", "EUW", "KR", "BR", "LAN", "EUNE", "JP", "LAS"];
 
 let uid = 0;
 const nextId = () => "p" + ++uid + "-" + Date.now().toString(36);
 
 function seedPlayers(): LeaderboardPlayer[] {
-  return START_NAMES.map((name, i) => ({ id: nextId(), name, region: START_REGIONS[i] }));
+  return START_NAMES.map((name, i) => ({ id: nextId(), name, server: START_SERVERS[i] }));
 }
 
 /** Demo/seed data — used only as a transient placeholder before a lobby's real data loads, never persisted. */
