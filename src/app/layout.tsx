@@ -17,7 +17,8 @@ export const metadata: Metadata = {
     ? { google: process.env.GOOGLE_SITE_VERIFICATION }
     : undefined,
   title: '4Hope — Play For Keeps',
-  description: "We're a gaming crew built on good vibes, camaraderie, and a little luck.",
+  description:
+    "We're a gaming crew built on good vibes, camaraderie, and a little luck. Meet the TFT and League roster, join player-run lobbies and follow live leaderboards.",
   icons: {
     icon: [
       {

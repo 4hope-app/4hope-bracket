@@ -4,7 +4,8 @@ import { TERMS_UPDATED_LABEL } from '@/lib/legal'
 
 export const metadata: Metadata = {
   title: 'Privacy — 4Hope',
-  description: 'What data 4Hope keeps, why, for how long, and how to get it deleted.',
+  description:
+    'What data 4Hope keeps and why, who else touches it, cookies, how long we keep it, and how to delete or change your data.',
 }
 
 const EMAIL = 'hello@4hope.app'
