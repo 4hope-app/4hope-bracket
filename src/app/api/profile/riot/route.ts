@@ -5,6 +5,7 @@ import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
 import { AVATAR_CONTENT_TYPE } from "@/lib/avatar";
 import { buildRiotRecord } from "@/lib/riotAccount";
 import { isRiotServer } from "@/api/riot/account";
+import { invalidateLadder } from "@/lib/ladderData";
 
 const REFRESH_COOLDOWN_MS = (Number(process.env.RIOT_REFRESH_COOLDOWN_SECONDS) || 180) * 1000;
 
@@ -74,6 +75,7 @@ export async function POST(request: Request) {
 
   await getAdminDb().collection(envCollection("users")).doc(session.user.id).set({ riot: result.riot }, { merge: true });
 
+  invalidateLadder();
   return NextResponse.json({ ok: true, riot: riotResponsePayload(result.riot) });
 }
 
@@ -110,6 +112,7 @@ export async function PATCH() {
 
   await docRef.set({ riot: result.riot }, { merge: true });
 
+  invalidateLadder();
   return NextResponse.json({ ok: true, riot: riotResponsePayload(result.riot) });
 }
 
@@ -124,5 +127,6 @@ export async function DELETE() {
     .doc(session.user.id)
     .set({ riot: FieldValue.delete() }, { merge: true });
 
+  invalidateLadder();
   return NextResponse.json({ ok: true });
 }

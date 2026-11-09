@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
 import { COUNTRY_HIDDEN, isCountryCode } from "@/lib/countries";
+import { invalidateLadder } from "@/lib/ladderData";
 
 /** Sets the signed-in player's country (for accounts created before it was asked at sign-up). */
 export async function PUT(request: Request) {
@@ -14,5 +15,6 @@ export async function PUT(request: Request) {
   const ref = getAdminDb().collection(envCollection("users")).doc(session.user.id);
   if (!(await ref.get()).exists) return NextResponse.json({ error: "Profile not found" }, { status: 404 });
   await ref.set({ country }, { merge: true });
+  invalidateLadder();
   return NextResponse.json({ ok: true });
 }

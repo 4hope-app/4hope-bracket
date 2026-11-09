@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { auth } from "@/lib/auth";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
 import { COUNTRY_HIDDEN, isCountryCode } from "@/lib/countries";
+import { invalidateLadder } from "@/lib/ladderData";
 import { compressAvatarDataUrl, resolvePhotoSrc } from "@/lib/avatar";
 
 export async function GET() {
@@ -87,6 +88,7 @@ export async function POST(request: Request) {
     { merge: true },
   );
 
+  invalidateLadder();
   return NextResponse.json({ ok: true });
 }
 
@@ -129,5 +131,6 @@ export async function PATCH(request: Request) {
     await docRef.update(photoUpdate);
   }
 
+  invalidateLadder();
   return NextResponse.json({ ok: true });
 }

@@ -1,5 +1,6 @@
+import { revalidateTag, unstable_cache } from "next/cache";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
-import { resolvePhotoSrc } from "@/lib/avatar";
+import { resolveAvatarBytes } from "@/lib/avatar";
 import { isCountryCode } from "@/lib/countries";
 import { isRanked, LADDER_PAGE_SIZE, rankScore } from "@/lib/ladder";
 
@@ -24,7 +25,7 @@ export interface LadderPage {
 }
 
 /** Every linked, verified, ranked TFT account, best first. Read from the `riot` snapshot on each profile — no Riot call. */
-async function loadRanked(): Promise<LadderRow[]> {
+async function readRanked(): Promise<LadderRow[]> {
   const snap = await getAdminDb().collection(envCollection("users")).where("riot.verified", "==", true).get();
   return snap.docs
     .map((doc) => ({ id: doc.id, data: doc.data() }))
@@ -39,7 +40,8 @@ async function loadRanked(): Promise<LadderRow[]> {
       rank: (data.riot.rank ?? "") as string,
       lp: (data.riot.lp ?? 0) as number,
       country: isCountryCode(data.country) ? (data.country as string) : null,
-      photoURL: resolvePhotoSrc(data),
+      // Served by /api/users/[id]/photo (own upload -> Riot icon -> clover) so rows stay light and cacheable.
+      photoURL: resolveAvatarBytes(data) ? `/api/users/${id}/photo` : null,
       checkedAt: (data.riot.lastCheckedAt ?? null) as string | null,
     }))
     .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
@@ -47,6 +49,16 @@ async function loadRanked(): Promise<LadderRow[]> {
       void _score;
       return { ...row, position: i + 1 };
     });
+}
+
+const LADDER_TAG = "ladder";
+
+/** Shared by home, /ladder, the API and the sitemap, so they cost one Firestore read per window instead of one each. */
+const loadRanked = unstable_cache(readRanked, ["ladder-ranked"], { tags: [LADDER_TAG], revalidate: 300 });
+
+/** Call when anything the ladder shows changes (Riot link/refresh/unlink, country, name, photo) so it updates right away. */
+export function invalidateLadder() {
+  revalidateTag(LADDER_TAG, { expire: 0 });
 }
 
 /** Ranked-player count per country (only players who chose to show one). */

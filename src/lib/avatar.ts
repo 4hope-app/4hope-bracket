@@ -94,3 +94,15 @@ export function resolveCompanionIconSrc(profile: FirebaseFirestore.DocumentData)
   }
   return null;
 }
+
+/**
+ * The picture shown for a player, in order: their own uploaded image -> their Riot profile icon -> nothing
+ * (callers then show the default clover mark). A Google/Gmail photo is deliberately never used.
+ */
+export function resolveAvatarBytes(profile: FirebaseFirestore.DocumentData): Buffer | null {
+  const photo = profile.photo ?? {};
+  if (Buffer.isBuffer(photo.currentBytes)) return photo.currentBytes;
+  if (Buffer.isBuffer(profile.photoBytes)) return profile.photoBytes;
+  if (Buffer.isBuffer(profile.riot?.iconBytes)) return profile.riot.iconBytes;
+  return null;
+}
