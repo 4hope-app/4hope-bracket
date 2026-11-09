@@ -23,8 +23,9 @@ export function LadderBoard({ initialRows, total: initialTotal, country }: Props
   const [loading, setLoading] = useState(false)
   const first = useRef(true)
 
-  const fetchPage = async (offset: number, query: string) => {
+  const fetchPage = async (offset: number, query: string, after?: string) => {
     const params = new URLSearchParams({ offset: String(offset), q: query })
+    if (after) params.set('after', after)
     if (country) params.set('country', country)
     const res = await fetch(`/api/ladder?${params}`)
     if (!res.ok) throw new Error('failed')
@@ -47,7 +48,7 @@ export function LadderBoard({ initialRows, total: initialTotal, country }: Props
   const more = async () => {
     setLoading(true)
     try {
-      const d = await fetchPage(rows.length, q)
+      const d = await fetchPage(rows.length, q, rows[rows.length - 1]?.id)
       setRows((r) => [...r, ...d.rows])
       setTotal(d.total)
     } finally {
@@ -97,7 +98,7 @@ export function LadderBoard({ initialRows, total: initialTotal, country }: Props
       </ol>
 
       {searching && rows.length === 0 && <p className="mt-6 text-white/60">No player matches that search.</p>}
-      {rows.length < total && (
+      {!searching && rows.length < total && (
         <div className="mt-5 flex justify-center">
           <Button variant="subtle" disabled={loading} onClick={more}>
             {loading ? 'Loading…' : `See more (${Math.min(LADDER_PAGE_SIZE, total - rows.length)} of ${total - rows.length} left)`}

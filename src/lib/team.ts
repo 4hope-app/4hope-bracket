@@ -1,3 +1,5 @@
+import { slugify } from "@/lib/slug";
+
 const TEAM_NAME_ALLOWED = /^[A-Za-z0-9_\- ]+$/;
 const TEAM_CODE_PATTERN = /^[A-Z0-9]{2}$/;
 
@@ -35,4 +37,9 @@ export function defaultTeamCode(name: string): string {
   code = code.replace(/[^A-Z0-9]/g, "");
   while (code.length < 2) code += "X";
   return code.slice(0, 2);
+}
+
+/** URL slug for a squad ("4 Hope" -> "4-hope"). Unique across squads, so "4 Hope" and "4-Hope" can't both exist. */
+export function teamSlug(name: string): string {
+  return slugify(name);
 }

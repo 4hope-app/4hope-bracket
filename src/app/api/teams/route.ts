@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server";
+import { syncPlayer, syncTeamMembers } from "@/lib/players";
 import { FieldValue } from "firebase-admin/firestore";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
 import { compressTeamLogo } from "@/lib/avatar";
-import { defaultTeamCode, isValidTeamCode, normalizeTeamName, teamNameKey } from "@/lib/team";
+import { defaultTeamCode, isValidTeamCode, normalizeTeamName, teamNameKey, teamSlug } from "@/lib/team";
 import { requireSession, requireTeamOwner, requireUserTeamId } from "@/lib/teamAuth";
+
+/** The squad's URL slug (/squads/4-hope) must exist and be unique, so "4 Hope" and "4-Hope" can't both be registered. */
+async function checkSlug(teamsCol: FirebaseFirestore.CollectionReference, name: string, ownId: string | null) {
+  const slug = teamSlug(name);
+  if (!slug) return NextResponse.json({ error: "Team name needs at least one letter or number." }, { status: 400 });
+  const dupe = await teamsCol.where("slug", "==", slug).limit(1).get();
+  if (!dupe.empty && dupe.docs[0].id !== ownId) {
+    return NextResponse.json({ error: "A team with that name already exists." }, { status: 409 });
+  }
+  return null;
+}
 
 export async function POST(request: Request) {
   const session = await requireSession();
@@ -37,6 +49,8 @@ export async function POST(request: Request) {
   if (!dupe.empty) {
     return NextResponse.json({ error: "A team with that name already exists." }, { status: 409 });
   }
+  const slugCheck = await checkSlug(teamsCol, teamName, null);
+  if (slugCheck) return slugCheck;
 
   const logoBytes = typeof logoDataUrl === "string" && logoDataUrl ? await compressTeamLogo(logoDataUrl) : null;
 
@@ -44,6 +58,7 @@ export async function POST(request: Request) {
   await teamRef.set({
     name: teamName,
     nameKey,
+    slug: teamSlug(teamName),
     code: teamCode,
     ownerId: session.user.id,
     ...(logoBytes ? { logoBytes } : {}),
@@ -52,6 +67,7 @@ export async function POST(request: Request) {
   await teamRef.collection("members").doc(session.user.id).set({ joinedAt: new Date().toISOString() });
 
   await userRef.set({ teamId: teamRef.id }, { merge: true });
+  await syncPlayer(session.user.id);
 
   return NextResponse.json({ ok: true, teamId: teamRef.id });
 }
@@ -85,6 +101,8 @@ export async function PATCH(request: Request) {
   if (!dupe.empty && dupe.docs[0].id !== teamId) {
     return NextResponse.json({ error: "A team with that name already exists." }, { status: 409 });
   }
+  const slugCheck = await checkSlug(teamsCol, teamName, teamId);
+  if (slugCheck) return slugCheck;
 
   // logoDataUrl: a new data URL means "replace", null/absent means "remove", so the stored
   // logoBytes always reflects what the client showed when it submitted the form.
@@ -94,11 +112,13 @@ export async function PATCH(request: Request) {
     {
       name: teamName,
       nameKey,
+      slug: teamSlug(teamName),
       code: teamCode,
       logoBytes: logoBytes ?? FieldValue.delete(),
     },
     { merge: true },
   );
 
+  await syncTeamMembers(teamId);
   return NextResponse.json({ ok: true, teamId });
 }

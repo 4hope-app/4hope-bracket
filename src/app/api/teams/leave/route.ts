@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { syncPlayer } from "@/lib/players";
 import { FieldValue } from "firebase-admin/firestore";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
 import { requireSession, requireUserTeamId } from "@/lib/teamAuth";
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
   const teamDoc = await teamRef.get();
   if (!teamDoc.exists) {
     await userRef.set({ teamId: FieldValue.delete() }, { merge: true });
+    await syncPlayer(session.user.id);
     return NextResponse.json({ ok: true });
   }
 
@@ -65,6 +67,7 @@ export async function POST(request: Request) {
   }
 
   await userRef.set({ teamId: FieldValue.delete() }, { merge: true });
+  await syncPlayer(session.user.id);
 
   return NextResponse.json({ ok: true, teamName: team.name, teamClosed: isManager && remainingMembers.length === 0 });
 }

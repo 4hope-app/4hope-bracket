@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { syncPlayer } from "@/lib/players";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
 import { resolveTeamLogoSrc } from "@/lib/avatar";
 import { requireSession } from "@/lib/teamAuth";
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
 
   await teamDoc.ref.collection("members").doc(session.user.id).set({ joinedAt: new Date().toISOString(), joinedWithToken: token });
   await userRef.set({ teamId: teamDoc.id }, { merge: true });
+  await syncPlayer(session.user.id);
 
   return NextResponse.json({
     ok: true,

@@ -35,6 +35,7 @@ export function Avatar({ src = null, name = '', size = 'md', ring = false, class
           key={src}
           src={src}
           alt={name}
+          loading="lazy"
           referrerPolicy="no-referrer"
           className="h-full w-full object-cover"
           onError={() => setFailed(true)}

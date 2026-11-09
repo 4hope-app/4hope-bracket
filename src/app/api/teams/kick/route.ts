@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { syncPlayer } from "@/lib/players";
 import { FieldValue } from "firebase-admin/firestore";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
 import { requireSession, requireTeamOwner, requireUserTeamId } from "@/lib/teamAuth";
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
 
   await memberRef.delete();
   await usersCol.doc(memberId).set({ teamId: FieldValue.delete() }, { merge: true });
+  await syncPlayer(memberId);
   // Retire the invite token the kicked player used, so they can't rejoin by replaying the same link.
   if (joinedWithToken) {
     await teamRef.set({ revokedTokens: FieldValue.arrayUnion(joinedWithToken) }, { merge: true });
