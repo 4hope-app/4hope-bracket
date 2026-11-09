@@ -23,6 +23,7 @@ const LINKS: NavLink[] = [
   { label: 'Home', href: '/#home' },
   { label: 'Roster', href: '/#roster' },
   { label: 'Lobbies', href: '/lobbies' },
+  { label: 'Tournaments', href: '/tournaments' },
   { label: 'Contact', href: '/#contact' },
 ]
 
