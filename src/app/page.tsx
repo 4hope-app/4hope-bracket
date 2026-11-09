@@ -1,15 +1,10 @@
 import { Navigation } from '@/components/Navigation'
 import { TitleSlide } from '@/components/TitleSlide'
-import { RoastSlide } from '@/components/RoastSlide'
+import { LadderSection } from '@/components/LadderSection'
 import { ContactSection } from '@/components/ContactSection'
-import { fetchAllRoastPlayerStats, parseRoastPlayers } from '@/api/riot/roster'
+import { getLadder } from '@/lib/ladderData'
 
-function initialsOf(name: string): string {
-  // Riot IDs here share a "4H " team prefix, so strip it before taking initials
-  // or every player collapses to the same "4H" tag.
-  const withoutTeamPrefix = name.replace(/^4H\s+/i, '')
-  return withoutTeamPrefix.slice(0, 2).toUpperCase()
-}
+export const dynamic = 'force-dynamic'
 
 export default async function Home() {
   const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL ?? ''
@@ -21,25 +16,7 @@ export default async function Home() {
     process.env.HERO_HEADING_LINE_2 ?? 'for keeps',
   ]
 
-  const liveStats = await fetchAllRoastPlayerStats()
-
-  const players = liveStats.length > 0
-    ? liveStats.map((stats) => ({
-        initials: initialsOf(stats.displayName),
-        name: stats.displayName,
-        tier: `${stats.tier}${stats.rank ? ` ${stats.rank}` : ''}`,
-        lp: stats.lp,
-        region: stats.region,
-        avatarUrl: stats.avatarUrl,
-        ladderRank: stats.ladderRank,
-      }))
-    : parseRoastPlayers(process.env.ROAST_PLAYERS).map((player) => ({
-        initials: initialsOf(player.displayName),
-        name: player.displayName,
-        tier: 'Unranked',
-        lp: 0,
-        region: player.platform,
-      }))
+  const { rows: topPlayers } = await getLadder({ limit: 5 })
 
   return (
     <>
@@ -54,8 +31,8 @@ export default async function Home() {
         />
       </div>
 
-      <div id="roster" className="scroll-mt-16">
-        <RoastSlide players={players} />
+      <div id="ladder" className="scroll-mt-16">
+        <LadderSection rows={topPlayers} />
       </div>
 
       <ContactSection discordUrl={discordUrl} discordSupportUrl={discordSupportUrl} />

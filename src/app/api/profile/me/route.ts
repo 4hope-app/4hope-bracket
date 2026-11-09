@@ -3,7 +3,7 @@ import { TERMS_VERSION } from "@/lib/legal";
 import { FieldValue } from "firebase-admin/firestore";
 import { auth } from "@/lib/auth";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
-import { isCountryCode } from "@/lib/countries";
+import { COUNTRY_HIDDEN, isCountryCode } from "@/lib/countries";
 import { compressAvatarDataUrl, resolvePhotoSrc } from "@/lib/avatar";
 
 export async function GET() {
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   if (!username || typeof username !== "string" || !/^[A-Za-z0-9_-]{1,24}$/.test(username)) {
     return NextResponse.json({ error: "Invalid username" }, { status: 400 });
   }
-  if (!isCountryCode(country)) {
+  if (!isCountryCode(country) && country !== COUNTRY_HIDDEN) {
     return NextResponse.json({ error: "Choose your country." }, { status: 400 });
   }
   if (acceptedTerms !== true) {

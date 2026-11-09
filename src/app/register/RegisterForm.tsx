@@ -154,8 +154,8 @@ export function RegisterForm() {
             />
           </FormField>
 
-          <FormField label="Country" hint="Used for country ladders. You can change it later." className="mt-4">
-            <CountrySelect value={country} onChange={setCountry} />
+          <FormField label="Country" hint="Used for country ladders. Prefer not to say? That works too. You can change it later." className="mt-4">
+            <CountrySelect value={country} onChange={setCountry} allowHidden />
           </FormField>
 
           <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-snug text-white/70">

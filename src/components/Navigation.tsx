@@ -21,9 +21,8 @@ interface NavigationProps {
 // correctly from any page, not just the home page itself.
 const LINKS: NavLink[] = [
   { label: 'Home', href: '/#home' },
-  { label: 'Roster', href: '/#roster' },
+  { label: 'Ladder', href: '/#ladder' },
   { label: 'Lobbies', href: '/lobbies' },
-  { label: 'Ladder', href: '/ladder' },
   { label: 'Contact', href: '/#contact' },
 ]
 

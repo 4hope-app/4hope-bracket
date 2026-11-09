@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { cn } from '@/lib/utils'
-import { countryOptions } from '@/lib/countries'
+import { COUNTRY_HIDDEN, countryOptions } from '@/lib/countries'
 
 interface CountrySelectProps {
   value: string
@@ -11,11 +11,13 @@ interface CountrySelectProps {
   allLabel?: string
   /** Restrict to these codes (e.g. countries that have ranked players). */
   only?: string[]
+  /** Offers "Prefer not to say" (stored as no country). */
+  allowHidden?: boolean
   className?: string
 }
 
 /** Native select (keyboard + mobile friendly, type-to-jump) styled like the form inputs. */
-export function CountrySelect({ value, onChange, allLabel, only, className }: CountrySelectProps) {
+export function CountrySelect({ value, onChange, allLabel, only, allowHidden, className }: CountrySelectProps) {
   const options = useMemo(() => {
     const all = countryOptions()
     return only ? all.filter((o) => only.includes(o.code)) : all
@@ -32,6 +34,7 @@ export function CountrySelect({ value, onChange, allLabel, only, className }: Co
       )}
     >
       {allLabel ? <option value="">{allLabel}</option> : <option value="">Select your country</option>}
+      {allowHidden ? <option value={COUNTRY_HIDDEN}>Prefer not to say</option> : null}
       {options.map((o) => (
         <option key={o.code} value={o.code}>
           {o.name}

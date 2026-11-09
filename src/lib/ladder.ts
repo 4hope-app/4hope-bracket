@@ -17,3 +17,8 @@ export function tierLabel(tier: string, rank: string): string {
   const name = tier.charAt(0) + tier.slice(1).toLowerCase();
   return ["MASTER", "GRANDMASTER", "CHALLENGER"].includes(tier.toUpperCase()) || !rank ? name : `${name} ${rank}`;
 }
+
+export const LADDER_PAGE_SIZE = 25;
+
+/** Countries with at least this many ranked players are indexable and listed in the sitemap. */
+export const MIN_INDEXABLE_PLAYERS = 1;
