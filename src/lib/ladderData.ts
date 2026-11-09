@@ -5,7 +5,8 @@ import { LADDER_PAGE_SIZE } from "@/lib/ladder";
 import { PLAYERS } from "@/lib/playerDoc";
 
 export interface LadderRow {
-  id: string;
+  /** Public handle (lowercase username) — the only identifier that leaves the server. Never the account id. */
+  username: string;
   position: number;
   name: string;
   gameName: string;
@@ -37,7 +38,7 @@ export function invalidateLadder() {
 function toRow(doc: FirebaseFirestore.QueryDocumentSnapshot, position: number): LadderRow {
   const d = doc.data();
   return {
-    id: doc.id,
+    username: d.usernameKey,
     position,
     name: d.displayName,
     gameName: d.riot?.gameName ?? "",
@@ -47,7 +48,7 @@ function toRow(doc: FirebaseFirestore.QueryDocumentSnapshot, position: number): 
     lp: d.riot?.lp ?? 0,
     country: isCountryCode(d.country) ? d.country : null,
     // Own upload -> Riot icon -> clover, resolved by the photo route; null means go straight to the clover.
-    photoURL: d.hasPhoto ? `/api/users/${doc.id}/photo` : null,
+    photoURL: d.hasPhoto ? `/api/players/${d.usernameKey}/photo` : null,
     checkedAt: d.riot?.checkedAt ?? null,
     teamName: d.teamName ?? null,
     teamSlug: d.teamSlug ?? null,
@@ -62,7 +63,7 @@ function base(country: string | null) {
 interface Opts {
   country?: string | null;
   q?: string;
-  /** userId of the last row already shown — the next page starts right after it. */
+  /** username of the last row already shown — the next page starts right after it. */
   after?: string | null;
   /** How many rows are already shown; only used to number the new ones. */
   offset?: number;
@@ -92,8 +93,8 @@ async function readLadder({ country = null, q = "", after = null, offset = 0, li
 
   let query = base(country).orderBy("score", "desc").limit(limit);
   if (after) {
-    const cursor = await getAdminDb().collection(envCollection(PLAYERS)).doc(after).get();
-    if (cursor.exists) query = query.startAfter(cursor);
+    const found = await getAdminDb().collection(envCollection(PLAYERS)).where("usernameKey", "==", after).limit(1).get();
+    if (!found.empty) query = query.startAfter(found.docs[0]);
   }
   const [snap, count] = await Promise.all([query.get(), base(country).orderBy("score", "desc").count().get()]);
   const rows = snap.docs.map((doc, i) => toRow(doc, offset + i + 1));

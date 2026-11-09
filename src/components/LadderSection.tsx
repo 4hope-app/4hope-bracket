@@ -25,7 +25,7 @@ export function LadderSection({ rows, kicker = '// TFT · ranked', heading = 'Th
       ) : (
         <ol className="relative space-y-3">
           {rows.map((r) => (
-            <li key={r.id} className={`flex items-center gap-4 rounded-2xl border bg-ink-800 p-4 ${r.position === 1 ? 'border-gold-500' : 'border-white/10'}`}>
+            <li key={r.username} className={`flex items-center gap-4 rounded-2xl border bg-ink-800 p-4 ${r.position === 1 ? 'border-gold-500' : 'border-white/10'}`}>
               <span className={`w-10 text-center font-display text-3xl font-black ${r.position === 1 ? 'text-gold-500' : 'text-white/50'}`}>{r.position}</span>
               <Avatar src={r.photoURL} name={r.name} size="lg" ring={r.position === 1} />
               <span className="min-w-0 flex-1 truncate font-display text-lg font-extrabold text-white">

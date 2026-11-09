@@ -13,6 +13,6 @@ export async function GET(req: NextRequest) {
   const offset = Math.max(0, Number(sp.get("offset")) || 0);
   const limit = Math.min(50, Number(sp.get("limit")) || LADDER_PAGE_SIZE);
   const q = (sp.get("q") ?? "").slice(0, 40);
-  const after = /^[A-Za-z0-9_-]{1,64}$/.test(sp.get("after") ?? "") ? sp.get("after") : null;
+  const after = /^[a-z0-9_-]{1,24}$/.test(sp.get("after") ?? "") ? sp.get("after") : null;
   return NextResponse.json(await getLadder({ country, q, after, offset, limit }));
 }

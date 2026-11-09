@@ -48,7 +48,7 @@ export function LadderBoard({ initialRows, total: initialTotal, country }: Props
   const more = async () => {
     setLoading(true)
     try {
-      const d = await fetchPage(rows.length, q, rows[rows.length - 1]?.id)
+      const d = await fetchPage(rows.length, q, rows[rows.length - 1]?.username)
       setRows((r) => [...r, ...d.rows])
       setTotal(d.total)
     } finally {
@@ -70,7 +70,7 @@ export function LadderBoard({ initialRows, total: initialTotal, country }: Props
           {podium.map((r) => {
             const winner = r.position === 1
             return (
-              <div key={r.id} className={`flex flex-col items-center rounded-[14px] border p-4 text-center ${winner ? 'border-gold-500 bg-gold-500/10 pb-8' : 'border-white/10 bg-white/5'}`}>
+              <div key={r.username} className={`flex flex-col items-center rounded-[14px] border p-4 text-center ${winner ? 'border-gold-500 bg-gold-500/10 pb-8' : 'border-white/10 bg-white/5'}`}>
                 <Avatar src={r.photoURL} name={r.name} size="xl" className={`ring-4 ${PODIUM_RING[r.position as 1 | 2 | 3]}`} />
                 <p className="mt-3 max-w-full truncate font-display text-lg font-black uppercase">
                   {r.gameName}<span className="text-sm text-white/50">#{r.tagLine}</span>
@@ -86,7 +86,7 @@ export function LadderBoard({ initialRows, total: initialTotal, country }: Props
 
       <ol className="mt-4 space-y-2">
         {rest.map((r) => (
-          <li key={r.id} className="flex items-center gap-4 rounded-[14px] border border-white/10 px-4 py-2.5">
+          <li key={r.username} className="flex items-center gap-4 rounded-[14px] border border-white/10 px-4 py-2.5">
             <span className="w-10 font-display text-xl font-black text-white/50">{r.position}</span>
             <Avatar src={r.photoURL} name={r.name} size="md" />
             <span className="min-w-0 flex-1 truncate font-semibold">{r.gameName}<span className="text-white/50">#{r.tagLine}</span></span>
