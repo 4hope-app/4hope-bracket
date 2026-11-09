@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { CheckCircle2, Loader2, Pencil } from 'lucide-react'
 import { Avatar, Button, Card, FormField, GoldBars, Input, ValidatedInput } from '@/components/ui'
+import { CountrySelect } from '@/components/CountrySelect'
 import { CropDialog, useImageCropFlow } from '@/components/ImageCropFlow'
 
 interface Account {
@@ -27,6 +28,7 @@ export function RegisterForm() {
   const [account, setAccount] = useState<Account | null>(null)
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [country, setCountry] = useState('')
   const [agreed, setAgreed] = useState(false)
   const [status, setStatus] = useState<'loading' | 'idle' | 'saving'>('loading')
   const [error, setError] = useState<string | null>(null)
@@ -54,7 +56,7 @@ export function RegisterForm() {
   }, [router])
 
   const usernameValid = /^[A-Za-z0-9_-]{1,24}$/.test(username)
-  const canSubmit = usernameValid && agreed && status === 'idle'
+  const canSubmit = usernameValid && country !== '' && agreed && status === 'idle'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -68,6 +70,7 @@ export function RegisterForm() {
         body: JSON.stringify({
           username,
           displayName,
+          country,
           acceptedTerms: agreed,
           ...(photo.image && photo.image !== account?.picture ? { photoDataUrl: photo.image } : {}),
         }),
@@ -149,6 +152,10 @@ export function RegisterForm() {
               placeholder="e.g. Jordan Reyes"
               maxLength={40}
             />
+          </FormField>
+
+          <FormField label="Country" hint="Used for country ladders. You can change it later." className="mt-4">
+            <CountrySelect value={country} onChange={setCountry} />
           </FormField>
 
           <label className="mt-5 flex cursor-pointer items-start gap-3 text-sm leading-snug text-white/70">

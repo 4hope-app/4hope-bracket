@@ -3,6 +3,7 @@ import { TERMS_VERSION } from "@/lib/legal";
 import { FieldValue } from "firebase-admin/firestore";
 import { auth } from "@/lib/auth";
 import { envCollection, getAdminDb } from "@/lib/firebaseAdmin";
+import { isCountryCode } from "@/lib/countries";
 import { compressAvatarDataUrl, resolvePhotoSrc } from "@/lib/avatar";
 
 export async function GET() {
@@ -42,9 +43,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
 
-  const { username, displayName, photoDataUrl, acceptedTerms } = await request.json();
+  const { username, displayName, photoDataUrl, acceptedTerms, country } = await request.json();
   if (!username || typeof username !== "string" || !/^[A-Za-z0-9_-]{1,24}$/.test(username)) {
     return NextResponse.json({ error: "Invalid username" }, { status: 400 });
+  }
+  if (!isCountryCode(country)) {
+    return NextResponse.json({ error: "Choose your country." }, { status: 400 });
   }
   if (acceptedTerms !== true) {
     return NextResponse.json({ error: "You need to accept the Terms and Privacy Policy." }, { status: 400 });
@@ -67,6 +71,7 @@ export async function POST(request: Request) {
       username,
       usernameKey,
       displayName: typeof displayName === "string" && displayName.trim() ? displayName.trim() : username,
+      country,
       email: session.user.email ?? null,
       photo: {
         gmailUrl: session.user.image ?? null,
