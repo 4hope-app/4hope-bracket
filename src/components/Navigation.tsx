@@ -22,6 +22,7 @@ interface NavigationProps {
 const LINKS: NavLink[] = [
   { label: 'Home', href: '/#home' },
   { label: 'Ladder', href: '/#ladder' },
+  { label: 'Squads', href: '/squads' },
   { label: 'Lobbies', href: '/lobbies' },
   { label: 'Contact', href: '/#contact' },
 ]

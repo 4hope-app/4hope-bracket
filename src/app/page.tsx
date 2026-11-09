@@ -3,6 +3,7 @@ import { TitleSlide } from '@/components/TitleSlide'
 import { LadderSection } from '@/components/LadderSection'
 import { ContactSection } from '@/components/ContactSection'
 import { getLadder } from '@/lib/ladderData'
+import { getSquads } from '@/lib/squadData'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,7 +17,7 @@ export default async function Home() {
     process.env.HERO_HEADING_LINE_2 ?? 'for keeps',
   ]
 
-  const { rows: topPlayers } = await getLadder({ limit: 5 })
+  const [{ rows: topPlayers }, { rows: topSquads }] = await Promise.all([getLadder({ limit: 5 }), getSquads({ limit: 5 })])
 
   return (
     <>
@@ -32,7 +33,7 @@ export default async function Home() {
       </div>
 
       <div id="ladder" className="scroll-mt-16">
-        <LadderSection rows={topPlayers} />
+        <LadderSection rows={topPlayers} squads={topSquads} />
       </div>
 
       <ContactSection discordUrl={discordUrl} discordSupportUrl={discordSupportUrl} />

@@ -108,11 +108,14 @@ export async function PATCH(request: Request) {
   // logoBytes always reflects what the client showed when it submitted the form.
   const logoBytes = typeof logoDataUrl === "string" && logoDataUrl ? await compressTeamLogo(logoDataUrl) : null;
 
+  const previousSlug = (teamDoc.data()?.slug as string | undefined) || teamSlug((teamDoc.data()?.name as string) ?? "");
   await teamDoc.ref.set(
     {
       name: teamName,
       nameKey,
       slug: teamSlug(teamName),
+      // Old URLs keep working: /squads/<old-slug> redirects to the new one.
+      ...(previousSlug && previousSlug !== teamSlug(teamName) ? { oldSlugs: FieldValue.arrayUnion(previousSlug) } : {}),
       code: teamCode,
       logoBytes: logoBytes ?? FieldValue.delete(),
     },

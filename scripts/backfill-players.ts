@@ -5,7 +5,7 @@
  *   APP_ENV=uat npx tsx --env-file=.env.local scripts/backfill-players.ts
  */
 import { envCollection, getAdminDb } from "../src/lib/firebaseAdmin";
-import { writePlayer } from "../src/lib/playerDoc";
+import { recomputeTeam, writePlayer } from "../src/lib/playerDoc";
 import { teamSlug } from "../src/lib/team";
 
 async function main() {
@@ -29,6 +29,8 @@ async function main() {
     await writePlayer(db, u.id);
     n++;
   }
+  for (const t of teams.docs) await recomputeTeam(db, t.id);
+  console.log(`squad scores recomputed: ${teams.size}`);
   console.log(`players synced: ${n} (APP_ENV=${process.env.APP_ENV ?? "unset"})`);
 }
 
