@@ -12,7 +12,7 @@ Player-run lobbies (leaderboard rooms) live under `src/app/lobbies/` (routes wer
 
 - Firestore collections go through `envCollection()` (`-uat` suffix outside production).
 - **`teams` inside, "squad" outside:** the collection, `teamId` and `/api/teams/*` keep the name `teams`; user-facing text and URLs say "squad" (`/squads/{slug}`, slug = lowercase name with hyphens, unique).
-- **`players/{userId}`** is the public, read-only copy of a registered player (country, squad link, Riot rank, `score`). `users` stays the source of truth. The ladder is just `players` ordered by `score` (cursor-paginated). Call `syncPlayer(userId)` (`src/lib/players.ts`) after anything it mirrors changes. Backfill: `scripts/backfill-players.ts`. Composite indexes live in `firestore.indexes.json`.
+- **`players/{userId}`** is the public, read-only copy of a registered player (country, squad link, Riot rank, `score`). `users` stays the source of truth. The ladder is just `players` ordered by `score` (cursor-paginated). Call `syncPlayer(userId)` (`src/lib/players.ts`) after anything it mirrors changes. Backfill: `scripts/backfill-players.ts`. Composite indexes on `players` (country+score, teamId+score, country+gameNameKey) are created by hand in Firebase.
 
 ## Branch Strategy
 
