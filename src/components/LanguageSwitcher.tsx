@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useLang, useT } from '@/components/LangProvider'
 import { languages, localizePath, parsePathname, type Lang } from '@/i18n/utils'
 
@@ -10,7 +10,6 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
   const lang = useLang()
   const d = useT()
   const pathname = usePathname()
-  const search = useSearchParams().toString()
   const { path } = parsePathname(pathname)
 
   return (
@@ -21,7 +20,13 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
       {(Object.keys(languages) as Lang[]).map((l) => (
         <Link
           key={l}
-          href={`${localizePath(path, l)}${search ? `?${search}` : ''}`}
+          href={localizePath(path, l)}
+          // Keep the query and hash. Read at click time so this component needs no Suspense
+          // boundary (useSearchParams would force every page that shows the menu to be dynamic).
+          onClick={(e) => {
+            const { search, hash } = window.location
+            e.currentTarget.href = `${localizePath(path, l)}${search}${hash}`
+          }}
           hrefLang={l}
           lang={l}
           prefetch={false}
