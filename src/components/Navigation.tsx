@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
-import { LogOut, Menu, User, UserPlus, X } from 'lucide-react'
+import { LogOut, Menu, User, X } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useLang, useLocalizePath, useT } from '@/components/LangProvider'
@@ -211,10 +211,9 @@ export function Navigation({ discordUrl }: NavigationProps) {
           </div>
         ) : (
           <Link
-            href={localize('/login')}
-            className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 font-display text-sm font-bold uppercase tracking-[0.04em] text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:flex"
+            href={`${localize('/login')}?callbackUrl=${encodeURIComponent(pathname)}`}
+            className="hidden h-8 items-center justify-center rounded-lg border border-white/15 bg-transparent px-3 font-display text-sm font-bold tracking-[0.01em] text-white no-underline transition-colors hover:bg-ink-700 sm:inline-flex"
           >
-            <UserPlus size={18} />
             {d.auth.menu.signIn}
           </Link>
         )}
@@ -250,11 +249,10 @@ export function Navigation({ discordUrl }: NavigationProps) {
           <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
             {!isSignedIn && (
               <Link
-                href={localize('/login')}
+                href={`${localize('/login')}?callbackUrl=${encodeURIComponent(pathname)}`}
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-3 font-display text-sm font-extrabold uppercase tracking-wide text-white no-underline transition-colors hover:bg-white/10"
+                className="flex h-10 items-center justify-center rounded-lg border border-white/15 bg-transparent px-4 font-display text-base font-bold tracking-[0.01em] text-white no-underline transition-colors hover:bg-ink-700"
               >
-                <UserPlus size={18} />
                 {d.auth.menu.signIn}
               </Link>
             )}
