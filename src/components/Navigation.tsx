@@ -213,7 +213,7 @@ export function Navigation({ discordUrl }: NavigationProps) {
             className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 font-display text-sm font-bold uppercase tracking-[0.04em] text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:flex"
           >
             <UserPlus size={18} />
-            {d.auth.menu.signUp}
+            {d.auth.menu.signIn}
           </Link>
         )}
 
@@ -253,7 +253,7 @@ export function Navigation({ discordUrl }: NavigationProps) {
                 className="flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-3 font-display text-sm font-extrabold uppercase tracking-wide text-white no-underline transition-colors hover:bg-white/10"
               >
                 <UserPlus size={18} />
-                {d.auth.menu.signUp}
+                {d.auth.menu.signIn}
               </Link>
             )}
             {meetTheSquadButtonMobile}

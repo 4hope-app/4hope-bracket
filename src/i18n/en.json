@@ -91,7 +91,7 @@
   },
   "auth": {
     "menu": {
-      "signUp": "Sign up",
+      "signIn": "Sign in",
       "account": "Your account",
       "profile": "My profile",
       "signOut": "Sign out"

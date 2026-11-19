@@ -91,7 +91,7 @@
   },
   "auth": {
     "menu": {
-      "signUp": "Regístrate",
+      "signIn": "Iniciar sesión",
       "account": "Tu cuenta",
       "profile": "Mi perfil",
       "signOut": "Cerrar sesión"
