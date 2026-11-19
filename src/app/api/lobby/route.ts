@@ -17,21 +17,18 @@ export async function GET(req: NextRequest) {
   const limitParam = Number(req.nextUrl.searchParams.get("limit"));
   const limit = Number.isFinite(limitParam) && limitParam > 0 ? Math.min(limitParam, MAX_PAGE_SIZE) : PAGE_SIZE;
 
-  let query = getAdminDb()
-    .collection(envCollection("lobbies"))
-    .where("visibility", "==", "public")
-    .orderBy("createdAt", "desc")
-    .limit(limit);
-
-  if (after) {
-    query = query.startAfter(after);
-  }
-
-  const snap = await query.get();
+  // Filter on `visibility` only (Firestore's automatic single-field index) and sort + paginate
+  // here, so no composite (visibility + createdAt) index has to be created by hand.
+  const snap = await getAdminDb().collection(envCollection("lobbies")).where("visibility", "==", "public").get();
+  const createdAtOf = (doc: { data(): Record<string, unknown> }) => String(doc.data().createdAt ?? "");
+  const page = snap.docs
+    .sort((a, b) => createdAtOf(b).localeCompare(createdAtOf(a)))
+    .filter((doc) => !after || createdAtOf(doc) < after)
+    .slice(0, limit);
   const now = Date.now();
 
   const lobbies = await Promise.all(
-    snap.docs.map(async (doc) => {
+    page.map(async (doc) => {
       let data = doc.data() as Record<string, unknown>;
       // Scheduled lobbies self-heal to "live" once their start time has passed.
       if (data.status === "open" && typeof data.scheduledStartTime === "string" && new Date(data.scheduledStartTime).getTime() <= now) {

@@ -1,8 +1,24 @@
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { Navigation } from '@/components/Navigation'
 import { TitleSlide } from '@/components/TitleSlide'
 import { RoastSlide } from '@/components/RoastSlide'
 import { ContactSection } from '@/components/ContactSection'
 import { fetchAllRoastPlayerStats, parseRoastPlayers } from '@/api/riot/roster'
+import { getSiteUrl } from '@/lib/siteUrl'
+import { isLang, localizePath, t } from '@/i18n/utils'
+
+export async function generateMetadata({ params }: PageProps<'/[lang]'>): Promise<Metadata> {
+  const { lang } = await params
+  if (!isLang(lang)) return {}
+  const base = getSiteUrl()
+  return {
+    alternates: {
+      canonical: `${base}${localizePath('/', lang)}`,
+      languages: { es: `${base}/`, en: `${base}/en`, 'x-default': `${base}/` },
+    },
+  }
+}
 
 function initialsOf(name: string): string {
   // Riot IDs here share a "4H " team prefix, so strip it before taking initials
@@ -11,14 +27,19 @@ function initialsOf(name: string): string {
   return withoutTeamPrefix.slice(0, 2).toUpperCase()
 }
 
-export default async function Home() {
+export default async function Home({ params }: PageProps<'/[lang]'>) {
+  const { lang } = await params
+  if (!isLang(lang)) notFound()
+  const d = t(lang)
   const discordUrl = process.env.NEXT_PUBLIC_DISCORD_URL ?? ''
   const discordSupportUrl = process.env.NEXT_PUBLIC_DISCORD_SUPPORT_URL ?? ''
-  const teamDescription = process.env.TEAM_DESCRIPTION ?? ''
-  const heroKicker = process.env.HERO_KICKER
+  // The env overrides are English copy, so they only apply to the English page.
+  const en = lang === 'en'
+  const teamDescription = (en && process.env.TEAM_DESCRIPTION) || d.hero.subtitle
+  const heroKicker = (en && process.env.HERO_KICKER) || d.hero.kicker
   const heroHeading: [string, string] = [
-    process.env.HERO_HEADING_LINE_1 ?? 'Play',
-    process.env.HERO_HEADING_LINE_2 ?? 'for keeps',
+    (en && process.env.HERO_HEADING_LINE_1) || d.hero.line1,
+    (en && process.env.HERO_HEADING_LINE_2) || d.hero.line2,
   ]
 
   const liveStats = await fetchAllRoastPlayerStats()
@@ -36,7 +57,7 @@ export default async function Home() {
     : parseRoastPlayers(process.env.ROAST_PLAYERS).map((player) => ({
         initials: initialsOf(player.displayName),
         name: player.displayName,
-        tier: 'Unranked',
+        tier: d.roster.unranked,
         lp: 0,
         region: player.platform,
       }))
@@ -51,14 +72,15 @@ export default async function Home() {
           heading={heroHeading}
           subheading={teamDescription}
           discordUrl={discordUrl}
+          cta={d.hero.cta}
         />
       </div>
 
       <div id="roster" className="scroll-mt-16">
-        <RoastSlide players={players} />
+        <RoastSlide kicker={d.roster.kicker} heading={d.roster.heading} players={players} />
       </div>
 
-      <ContactSection discordUrl={discordUrl} discordSupportUrl={discordSupportUrl} />
+      <ContactSection copy={d.contact} discordUrl={discordUrl} discordSupportUrl={discordSupportUrl} />
 
     </>
   )

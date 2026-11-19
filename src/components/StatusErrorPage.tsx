@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useLocalizePath } from '@/components/LangProvider'
 import { Navigation } from '@/components/Navigation'
 import { GoldBars } from '@/components/ui/GoldBars'
 
@@ -27,6 +30,7 @@ interface StatusErrorPageProps {
 
 /** Shared full-bleed status page (404, 500, etc.) with the standard nav/hero/footer chrome. */
 export function StatusErrorPage({ discordUrl = '', kicker, code, heading, description, actions, links }: StatusErrorPageProps) {
+  const localize = useLocalizePath()
   return (
     <div className="relative flex min-h-[calc(100vh-4.5rem)] flex-col overflow-hidden bg-ink-1000 text-white">
       <Navigation discordUrl={discordUrl} />
@@ -68,7 +72,7 @@ export function StatusErrorPage({ discordUrl = '', kicker, code, heading, descri
                 )
               }
               return action.href ? (
-                <Link key={action.label} href={action.href} className={className}>
+                <Link key={action.label} href={localize(action.href)} className={className}>
                   {action.label}
                 </Link>
               ) : (
@@ -82,7 +86,7 @@ export function StatusErrorPage({ discordUrl = '', kicker, code, heading, descri
           {links && links.length > 0 ? (
             <div className="mt-6 flex flex-wrap gap-x-7 gap-y-2.5 border-t border-white/10 pt-4.5">
               {links.map((link) => (
-                <Link key={link.label} href={link.href} className="border-b border-gold-500/40 pb-0.5 text-sm text-white/72 no-underline">
+                <Link key={link.label} href={localize(link.href)} className="border-b border-gold-500/40 pb-0.5 text-sm text-white/72 no-underline">
                   {link.label}
                 </Link>
               ))}
