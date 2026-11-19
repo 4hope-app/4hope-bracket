@@ -43,10 +43,12 @@ export async function listPublicLobbyUrls(limit = 1000): Promise<{ id: string; l
     const snap = await getAdminDb()
       .collection(envCollection("lobbies"))
       .where("visibility", "==", "public")
-      .orderBy("createdAt", "desc")
-      .limit(limit)
       .get();
-    return snap.docs.map((doc) => ({ id: doc.id, lastModified: str(doc.data().createdAt) || null }));
+    // Sorted here instead of with orderBy, which would need a composite index.
+    return snap.docs
+      .map((doc) => ({ id: doc.id, lastModified: str(doc.data().createdAt) || null }))
+      .sort((a, b) => (b.lastModified ?? "").localeCompare(a.lastModified ?? ""))
+      .slice(0, limit);
   } catch {
     return [];
   }

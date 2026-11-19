@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { useLang } from '@/components/LangProvider'
+import { getLogoutUrl } from '@/lib/siteUrl'
 import { CheckCircle2, Loader2, Pencil } from 'lucide-react'
 import { Avatar, Button, Card, FormField, GoldBars, Input, ValidatedInput } from '@/components/ui'
 import { CropDialog, useImageCropFlow } from '@/components/ImageCropFlow'
@@ -22,6 +23,7 @@ function defaultUsername(email: string | null): string {
 
 export function RegisterForm() {
   const router = useRouter()
+  const lang = useLang()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/profile'
   const [account, setAccount] = useState<Account | null>(null)
@@ -190,7 +192,7 @@ export function RegisterForm() {
           Signed in as {account.email}. Not you?{' '}
           <button
             type="button"
-            onClick={() => signOut({ callbackUrl: '/login' })}
+            onClick={() => window.location.assign(getLogoutUrl(lang, window.location.origin))}
             className="text-gold-500 underline-offset-2 hover:underline"
           >
             Switch account

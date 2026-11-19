@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { LegalPage } from '@/components/LegalPage'
 import { TERMS_UPDATED_LABEL } from '@/lib/legal'
+import { defaultLang, isLang, localizePath } from '@/i18n/utils'
 
 export const metadata: Metadata = {
   title: 'Terms — 4Hope',
@@ -12,7 +14,9 @@ const EMAIL = 'hello@4hope.app'
 const REPORT_BODY =
   'Lobby ID (6 digits):\n\nRiot ID of the player:\n\nWhat happened:\n\nProof (link to clip or screenshot):\n'
 
-export default function TermsPage() {
+export default async function TermsPage({ params }: PageProps<'/[lang]/terms'>) {
+  const { lang: rawLang } = await params
+  const lang = isLang(rawLang) ? rawLang : defaultLang
   return (
     <LegalPage
       kicker="// terms"
@@ -84,7 +88,7 @@ export default function TermsPage() {
           body: (
             <p>
               The site is free and provided as is, with no promise it will always be online or error-free. We may change
-              or remove features. Your data is handled as described in our <a href="/privacy">privacy page</a>.
+              or remove features. Your data is handled as described in our <Link href={localizePath('/privacy', lang)}>privacy page</Link>.
             </p>
           ),
         },

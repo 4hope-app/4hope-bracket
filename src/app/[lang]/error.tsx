@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { StatusErrorPage } from '@/components/StatusErrorPage'
+import { useT } from '@/components/LangProvider'
 
 export default function Error({
   error,
@@ -10,6 +11,8 @@ export default function Error({
   error: Error & { digest?: string }
   retry: () => void
 }) {
+  const d = useT().status.error
+
   useEffect(() => {
     console.error(error)
   }, [error])
@@ -17,13 +20,13 @@ export default function Error({
   return (
     <StatusErrorPage
       discordUrl={process.env.NEXT_PUBLIC_DISCORD_URL ?? ''}
-      kicker="// ERROR 500 — SERVER DOWN"
+      kicker={d.kicker}
       code="500"
-      heading="TEAM WIPE."
-      description="Something broke on our end. Try again, or head back to the home page while we respawn."
+      heading={d.heading}
+      description={d.description}
       actions={[
-        { label: 'Try again', onClick: retry, variant: 'primary' },
-        { label: 'Back to home', href: '/', variant: 'subtle' },
+        { label: d.retry, onClick: retry, variant: 'primary' },
+        { label: d.home, href: '/', variant: 'subtle' },
       ]}
     />
   )

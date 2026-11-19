@@ -11,20 +11,21 @@ interface RoastPlayer {
 }
 
 interface RoastSlideProps {
-  kicker?: string
-  heading?: string
+  kicker: string
+  heading: string
   players: RoastPlayer[]
 }
 
 export function RoastSlide({
-  kicker = '// TFT · roast report',
-  heading = 'The roster',
+  kicker,
+  heading,
   players,
 }: RoastSlideProps) {
   return (
-    <section className="relative isolate w-full overflow-hidden bg-ink-1000 px-8 py-20 sm:px-20">
+    <section className="relative isolate w-full overflow-hidden bg-ink-1000 py-20">
       <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-10 h-8 w-[220px] -rotate-[32deg] rounded-md bg-gold-500 sm:-right-16 sm:-top-4 sm:h-12 sm:w-[360px]" />
 
+      <div className="relative mx-auto w-full max-w-[1200px] px-4 md:px-8">
       <span className="relative font-mono text-lg uppercase tracking-[0.16em] text-gold-500">{kicker}</span>
 
       <h2 className="relative mb-12 mt-3 font-display text-[clamp(2.25rem,6vw,4.5rem)] font-black uppercase leading-none tracking-[-0.02em] text-white">
@@ -73,6 +74,7 @@ export function RoastSlide({
             </div>
           </div>
         ))}
+      </div>
       </div>
     </section>
   )
