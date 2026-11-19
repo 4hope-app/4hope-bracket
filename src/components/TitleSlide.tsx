@@ -1,8 +1,9 @@
 interface TitleSlideProps {
-  kicker?: string
+  kicker: string
   heading: [string, string]
   subheading: string
   discordUrl: string
+  cta: string
 }
 
 function DiscordIcon() {
@@ -21,13 +22,14 @@ const BARS = [
 ] as const
 
 export function TitleSlide({
-  kicker = '// TFT + League',
+  kicker,
   heading,
   subheading,
   discordUrl,
+  cta,
 }: TitleSlideProps) {
   return (
-    <section className="relative isolate overflow-hidden bg-ink-1000 px-7 pb-14 pt-16">
+    <section className="relative isolate overflow-hidden bg-ink-1000 pb-14 pt-16">
       <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-90">
         {BARS.map((b, i) => (
           <span
@@ -45,7 +47,8 @@ export function TitleSlide({
         <span className="absolute inset-0 bg-[linear-gradient(90deg,var(--color-ink-1000)_30%,rgba(12,12,13,0.4)_70%)]" />
       </div>
 
-      <div className="relative max-w-[620px]">
+      <div className="relative mx-auto w-full max-w-[1200px] px-4 md:px-8">
+      <div className="max-w-[620px]">
         <div className="mb-4 font-mono text-xs uppercase tracking-[0.16em] text-gold-500">{kicker}</div>
 
         <h1 className="m-0 font-display text-[clamp(2.75rem,7.5vw,4.75rem)] font-black uppercase leading-[0.92] tracking-[-0.02em] text-white">
@@ -68,9 +71,10 @@ export function TitleSlide({
             className="inline-flex items-center gap-2.5 rounded-lg bg-gold-500 px-6 py-3 font-display text-base font-extrabold uppercase tracking-wide text-ink-1000 no-underline transition-colors hover:bg-gold-400"
           >
             <DiscordIcon />
-            Meet the squad
+            {cta}
           </a>
         </div>
+      </div>
       </div>
     </section>
   )

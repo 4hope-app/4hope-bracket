@@ -1,0 +1,195 @@
+{
+  "meta": {
+    "title": "4Hope — Juega en serio",
+    "description": "Somos un crew de gaming con buena onda, compañerismo y un poco de suerte. Conoce el roster de TFT y League, únete a lobbies hechos por jugadores y sigue leaderboards en vivo.",
+    "lobbiesTitle": "Lobbies — Leaderboards de TFT y League | 4Hope",
+    "lobbiesDescription": "Mira los lobbies abiertos y en vivo, únete a un squad y sigue el leaderboard en tiempo real. Crea tu propio lobby en 4Hope."
+  },
+  "a11y": {
+    "mainNav": "Navegación principal",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "language": "Idioma",
+    "homeLink": "Inicio de 4Hope"
+  },
+  "nav": {
+    "home": "Inicio",
+    "roster": "Roster",
+    "lobbies": "Lobbies",
+    "contact": "Contacto"
+  },
+  "hero": {
+    "kicker": "// TFT + League",
+    "line1": "Juega",
+    "line2": "en serio",
+    "subtitle": "Buena onda, compañerismo y un poco de suerte: eso es 4Hope. TFT y League, siempre juntos.",
+    "cta": "Conoce al squad"
+  },
+  "roster": {
+    "kicker": "// TFT · roast report",
+    "heading": "El roster",
+    "unranked": "Sin rango"
+  },
+  "contact": {
+    "kicker": "// contacto",
+    "title": "Habla con el squad",
+    "lead": "Elige lo que necesitas y se abre tu app de correo con los datos listos para completar.",
+    "discordLead": "¿No eres de correo?",
+    "discordLink": "Encuéntranos en Discord",
+    "replies": "// respondemos en ~3 días",
+    "topics": [
+      {
+        "kicker": "// SOPORTE",
+        "title": "Necesito una mano",
+        "description": "Problemas para entrar, un lobby roto, un puntaje incorrecto o cualquier cosa que se sienta injusta.",
+        "cta": "Enviar mensaje",
+        "subject": "[SOPORTE] ",
+        "body": "Correo con el que entraste:\n\nQué pasó:\n\nPágina o ID del lobby (si aplica):\n"
+      },
+      {
+        "kicker": "// TUS DATOS",
+        "title": "Borrar mis datos",
+        "description": "Pídenos eliminar tu cuenta y todo lo que esté ligado a ella.",
+        "cta": "Pedir eliminación",
+        "subject": "[SOLICITUD DE DATOS] ",
+        "body": "Correo con el que entraste:\n\nQué debemos borrar (cuenta, lobbies, todo):\n"
+      },
+      {
+        "kicker": "// HOLA",
+        "title": "Cualquier otra cosa",
+        "description": "Prensa, sponsors, colaboraciones o solo saludar.",
+        "cta": "Saluda",
+        "subject": "[HOLA] ",
+        "body": ""
+      }
+    ],
+    "copyEmail": "Copiar correo",
+    "emailCopied": "Correo copiado",
+    "copy": "Copiar",
+    "copied": "Copiado"
+  },
+  "footer": {
+    "tagline": "Más allá del juego. Más allá de la imaginación.",
+    "product": "Producto",
+    "community": "Comunidad",
+    "legal": "Legal",
+    "contact": "Contacto",
+    "links": {
+      "home": "Inicio",
+      "lobbies": "Lobbies",
+      "roster": "Roster",
+      "discord": "Discord",
+      "terms": "Términos y condiciones",
+      "privacy": "Privacidad",
+      "cookies": "Cookies",
+      "disclaimer": "Aviso sobre Riot Games",
+      "email": "Correo",
+      "contactSection": "Hablar con el squad"
+    },
+    "disclaimer": "4HOPE isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games and all associated properties are trademarks or registered trademarks of Riot Games, Inc.",
+    "rights": "Hecho en LATAM."
+  },
+  "auth": {
+    "menu": {
+      "signUp": "Regístrate",
+      "account": "Tu cuenta",
+      "profile": "Mi perfil",
+      "signOut": "Cerrar sesión"
+    }
+  },
+  "status": {
+    "notFound": {
+      "kicker": "// ERROR 404 — NO ENCONTRADO",
+      "heading": "LOBBY EQUIVOCADO.",
+      "description": "Esa página no está en el roster. Puede que la hayan movido, renombrado o que nunca haya existido. Revisa el enlace o empieza de nuevo desde el inicio.",
+      "home": "Volver al inicio",
+      "report": "Reportar un problema",
+      "rosterLink": "Roster",
+      "homeLink": "Inicio"
+    },
+    "error": {
+      "kicker": "// ERROR 500 — SERVIDOR CAÍDO",
+      "heading": "WIPE DEL EQUIPO.",
+      "description": "Algo falló de nuestro lado. Inténtalo de nuevo o vuelve al inicio mientras reaparecemos.",
+      "retry": "Reintentar",
+      "home": "Volver al inicio"
+    }
+  },
+  "profile": {
+    "noTeam": "Sin squad",
+    "signOut": "Cerrar sesión",
+    "tabs": {
+      "overview": "Resumen",
+      "squad": "Squad",
+      "settings": "Ajustes"
+    },
+    "team": "// Equipo",
+    "createTeam": "Crear equipo",
+    "editTeam": "Editar equipo",
+    "leaveTeam": "Salir del equipo",
+    "manager": "Manager",
+    "member": "Miembro",
+    "managerNote": "Gestionas el roster y los ajustes de este squad.",
+    "memberNote": "Eres miembro de este squad.",
+    "notOnRoster": "Aún no estás en un roster",
+    "notOnRosterHint": "Crea un squad para mostrar aquí el escudo de tu equipo, tu rol y a tus compañeros.",
+    "roster": "// Roster",
+    "searchMembers": "Buscar miembros",
+    "makeManagerFor": "Convertir a {name} en manager",
+    "makeManager": "Hacer manager",
+    "removeFromTeam": "Quitar del equipo",
+    "removeMember": "Quitar a {name}",
+    "noMatches": "Sin resultados",
+    "noMatchesHint": "Prueba con otro término de búsqueda.",
+    "noMembers": "Aún no hay miembros",
+    "noMembersHint": "Invita a tus compañeros cuando tu squad esté listo.",
+    "promoteTitle": "¿Hacer manager?",
+    "cancel": "Cancelar",
+    "promoteBody": "será el manager de este equipo y tú pasarás a ser un miembro normal.",
+    "leave": {
+      "title": "¿Salir del equipo?",
+      "leaving": "Saliendo…",
+      "failed": "No se pudo salir del equipo",
+      "left": "Saliste del equipo",
+      "closed": "{team} quedó cerrado porque no había nadie más.",
+      "leftMsg": "Saliste de {team}.",
+      "pickSuccessor": "Eres el manager. Elige a un compañero que tome el relevo antes de salir.",
+      "onlyOne": "Eres la única persona del equipo. Si sales, el equipo se cierra: su enlace de invitación dejará de funcionar, pero el registro del equipo se conserva.",
+      "memberNote": "Perderás el acceso al roster y a las invitaciones de este equipo."
+    },
+    "invite": {
+      "copied": "¡Copiado!",
+      "invite": "Invitar al roster",
+      "failed": "No se pudo crear el enlace de invitación",
+      "toastTitle": "Enlace de invitación copiado",
+      "toastMsg": "Este enlace funciona durante 7 días: compártelo con tu compañero.",
+      "errorTitle": "No se pudo crear la invitación",
+      "tryAgain": "Inténtalo de nuevo."
+    },
+    "teamDialog": {
+      "editTitle": "Edita tu equipo",
+      "createTitle": "Crea tu equipo",
+      "saving": "Guardando…",
+      "creating": "Creando…",
+      "save": "Guardar cambios",
+      "create": "Crear equipo",
+      "logoLabel": "Logo del equipo",
+      "logoHint": "Sube una imagen y recórtala en formato cuadrado.",
+      "editCrop": "Editar recorte",
+      "remove": "Quitar",
+      "upload": "Haz clic para subir una imagen",
+      "nameLabel": "Nombre del equipo",
+      "nameHint": "3–24 caracteres: letras, números, espacios, _ y -.",
+      "namePlaceholder": "p. ej. Búhos Nocturnos",
+      "codeLabel": "Código del equipo",
+      "codeError": "El código debe tener exactamente 2 caracteres (0-9, A-Z).",
+      "codeHint": "Exactamente 2 caracteres: 0-9 y A-Z en mayúscula. Se completa solo con el nombre del equipo si lo dejas vacío.",
+      "updated": "Equipo actualizado",
+      "created": "Equipo creado",
+      "updatedMsg": "{name} se actualizó.",
+      "createdMsg": "{name} está listo.",
+      "failSave": "No se pudo guardar el equipo",
+      "failCreate": "No se pudo crear el equipo"
+    }
+  }
+}

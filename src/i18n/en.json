@@ -1,0 +1,195 @@
+{
+  "meta": {
+    "title": "4Hope — Play For Keeps",
+    "description": "We're a gaming crew built on good vibes, camaraderie, and a little luck. Meet the TFT and League roster, join player-run lobbies and follow live leaderboards.",
+    "lobbiesTitle": "Lobbies — TFT & League leaderboards | 4Hope",
+    "lobbiesDescription": "Browse open and live lobbies, join a squad and follow the leaderboard in real time. Create your own lobby on 4Hope."
+  },
+  "a11y": {
+    "mainNav": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "homeLink": "4Hope home"
+  },
+  "nav": {
+    "home": "Home",
+    "roster": "Roster",
+    "lobbies": "Lobbies",
+    "contact": "Contact"
+  },
+  "hero": {
+    "kicker": "// TFT + League",
+    "line1": "Play",
+    "line2": "for keeps",
+    "subtitle": "Good vibes, camaraderie, a little luck — that's 4Hope. TFT and League, always together.",
+    "cta": "Meet the squad"
+  },
+  "roster": {
+    "kicker": "// TFT · roast report",
+    "heading": "The roster",
+    "unranked": "Unranked"
+  },
+  "contact": {
+    "kicker": "// contact",
+    "title": "Talk to the squad",
+    "lead": "Pick what you need and your email app opens with the details ready to fill in.",
+    "discordLead": "Not an email person?",
+    "discordLink": "Find us on Discord",
+    "replies": "// replies in ~3 days",
+    "topics": [
+      {
+        "kicker": "// SUPPORT",
+        "title": "Need a hand",
+        "description": "Sign-in trouble, a broken lobby, a wrong score, or anything that feels unfair.",
+        "cta": "Send message",
+        "subject": "[SUPPORT] ",
+        "body": "Email you signed in with:\n\nWhat happened:\n\nPage or lobby ID (if any):\n"
+      },
+      {
+        "kicker": "// YOUR DATA",
+        "title": "Delete my data",
+        "description": "Ask us to remove your account and everything tied to it.",
+        "cta": "Request deletion",
+        "subject": "[DATA REQUEST] ",
+        "body": "Email you signed in with:\n\nWhat should we delete (account, lobbies, everything):\n"
+      },
+      {
+        "kicker": "// HELLO",
+        "title": "Anything else",
+        "description": "Press, sponsors, collabs, or just saying hi.",
+        "cta": "Say hi",
+        "subject": "[HELLO] ",
+        "body": ""
+      }
+    ],
+    "copyEmail": "Copy email address",
+    "emailCopied": "Email copied",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "footer": {
+    "tagline": "Beyond gaming. Beyond imagination.",
+    "product": "Product",
+    "community": "Community",
+    "legal": "Legal",
+    "contact": "Contact",
+    "links": {
+      "home": "Home",
+      "lobbies": "Lobbies",
+      "roster": "Roster",
+      "discord": "Discord",
+      "terms": "Terms and conditions",
+      "privacy": "Privacy",
+      "cookies": "Cookies",
+      "disclaimer": "Riot Games notice",
+      "email": "Email",
+      "contactSection": "Talk to the squad"
+    },
+    "disclaimer": "4HOPE isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games and all associated properties are trademarks or registered trademarks of Riot Games, Inc.",
+    "rights": "Made in LATAM."
+  },
+  "auth": {
+    "menu": {
+      "signUp": "Sign up",
+      "account": "Your account",
+      "profile": "My profile",
+      "signOut": "Sign out"
+    }
+  },
+  "status": {
+    "notFound": {
+      "kicker": "// ERROR 404 — NOT FOUND",
+      "heading": "WRONG LOBBY.",
+      "description": "That page isn't on the roster. It may have been moved, renamed, or it never existed. Check the link, or start again from the home page.",
+      "home": "Back to home",
+      "report": "Report a problem",
+      "rosterLink": "Roster",
+      "homeLink": "Home"
+    },
+    "error": {
+      "kicker": "// ERROR 500 — SERVER DOWN",
+      "heading": "TEAM WIPE.",
+      "description": "Something broke on our end. Try again, or head back to the home page while we respawn.",
+      "retry": "Try again",
+      "home": "Back to home"
+    }
+  },
+  "profile": {
+    "noTeam": "No team yet",
+    "signOut": "Sign out",
+    "tabs": {
+      "overview": "Overview",
+      "squad": "Squad",
+      "settings": "Settings"
+    },
+    "team": "// Team",
+    "createTeam": "Create team",
+    "editTeam": "Edit team",
+    "leaveTeam": "Leave team",
+    "manager": "Manager",
+    "member": "Member",
+    "managerNote": "You manage this squad's roster and settings.",
+    "memberNote": "You're a member of this squad.",
+    "notOnRoster": "Not on a roster yet",
+    "notOnRosterHint": "Create a squad to show your team badge, role, and teammates here.",
+    "roster": "// Roster",
+    "searchMembers": "Search members",
+    "makeManagerFor": "Make {name} manager",
+    "makeManager": "Make manager",
+    "removeFromTeam": "Remove from team",
+    "removeMember": "Remove {name}",
+    "noMatches": "No matches",
+    "noMatchesHint": "Try a different search term.",
+    "noMembers": "No members yet",
+    "noMembersHint": "Invite teammates once your squad is set up.",
+    "promoteTitle": "Make manager?",
+    "cancel": "Cancel",
+    "promoteBody": "will become the manager of this team, and you'll become a regular member.",
+    "leave": {
+      "title": "Leave team?",
+      "leaving": "Leaving…",
+      "failed": "Failed to leave team",
+      "left": "Left team",
+      "closed": "{team} is now closed since no one else was on it.",
+      "leftMsg": "You left {team}.",
+      "pickSuccessor": "You're the manager. Pick a teammate to take over before you leave.",
+      "onlyOne": "You're the only one on this team. Leaving will close the team — its invite link will stop working, but the team record stays.",
+      "memberNote": "You'll lose access to this team's roster and invites."
+    },
+    "invite": {
+      "copied": "Copied!",
+      "invite": "Invite roster",
+      "failed": "Failed to create invite link",
+      "toastTitle": "Invite link copied",
+      "toastMsg": "This link works for 7 days — share it with your teammate.",
+      "errorTitle": "Could not create invite",
+      "tryAgain": "Please try again."
+    },
+    "teamDialog": {
+      "editTitle": "Edit your team",
+      "createTitle": "Create your team",
+      "saving": "Saving…",
+      "creating": "Creating…",
+      "save": "Save changes",
+      "create": "Create team",
+      "logoLabel": "Team logo",
+      "logoHint": "Upload an image, then crop it to a square.",
+      "editCrop": "Edit crop",
+      "remove": "Remove",
+      "upload": "Click to upload an image",
+      "nameLabel": "Team name",
+      "nameHint": "3–24 characters: letters, numbers, spaces, _ and -.",
+      "namePlaceholder": "e.g. Night Owls",
+      "codeLabel": "Team code",
+      "codeError": "Team code must be exactly 2 characters (0-9, A-Z).",
+      "codeHint": "Exactly 2 characters: 0-9 and uppercase A-Z. Auto-filled from the team name if left blank.",
+      "updated": "Team updated",
+      "created": "Team created",
+      "updatedMsg": "{name} has been updated.",
+      "createdMsg": "{name} is ready.",
+      "failSave": "Failed to save team",
+      "failCreate": "Failed to create team"
+    }
+  }
+}

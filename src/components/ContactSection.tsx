@@ -1,71 +1,46 @@
 import { ArrowRight, ArrowUpRight, Mail } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { CopyEmailButton } from '@/components/CopyEmailButton'
+import type { Dictionary } from '@/i18n/utils'
 
 const CONTACT_EMAIL = 'hello@4hope.app'
-
-const TOPICS = [
-  {
-    kicker: '// SUPPORT',
-    title: 'Need a hand',
-    description: 'Sign-in trouble, a broken lobby, a wrong score, or anything that feels unfair.',
-    cta: 'Send message',
-    subject: '[SUPPORT] ',
-    body: 'Email you signed in with:\n\nWhat happened:\n\nPage or lobby ID (if any):\n',
-  },
-  {
-    kicker: '// YOUR DATA',
-    title: 'Delete my data',
-    description: 'Ask us to remove your account and everything tied to it.',
-    cta: 'Request deletion',
-    subject: '[DATA REQUEST] ',
-    body: 'Email you signed in with:\n\nWhat should we delete (account, lobbies, everything):\n',
-  },
-  {
-    kicker: '// HELLO',
-    title: 'Anything else',
-    description: 'Press, sponsors, collabs, or just saying hi.',
-    cta: 'Say hi',
-    subject: '[HELLO] ',
-    body: '',
-  },
-]
 
 function mailto(subject: string, body: string) {
   return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 }
 
 interface ContactSectionProps {
+  copy: Dictionary['contact']
   discordUrl: string
   discordSupportUrl?: string
 }
 
-export function ContactSection({ discordUrl, discordSupportUrl }: ContactSectionProps) {
+export function ContactSection({ copy, discordUrl, discordSupportUrl }: ContactSectionProps) {
   const discordHref = discordSupportUrl || discordUrl
 
   return (
-    <section id="contact" className="relative isolate w-full scroll-mt-16 overflow-hidden bg-ink-1000 px-8 py-20 sm:px-20">
+    <section id="contact" className="relative isolate w-full scroll-mt-16 overflow-hidden bg-ink-1000 py-20">
       <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-10 h-8 w-[220px] -rotate-[32deg] rounded-md bg-gold-500 sm:-right-16 sm:-top-4 sm:h-12 sm:w-[360px]" />
       <div aria-hidden="true" className="pointer-events-none absolute -right-[186px] -top-10 h-8 w-[220px] -rotate-[32deg] rounded-md bg-gold-500 sm:-right-[200px] sm:-top-4 sm:h-12 sm:w-[360px]" />
 
-      <div className="relative">
-        <span className="font-mono text-lg uppercase tracking-[0.16em] text-gold-500">{'// contact'}</span>
+      <div className="relative mx-auto w-full max-w-[1200px] px-4 md:px-8">
+        <span className="font-mono text-lg uppercase tracking-[0.16em] text-gold-500">{copy.kicker}</span>
         <h2 className="mt-3 font-display text-[clamp(2.25rem,6vw,4.5rem)] font-black uppercase leading-none tracking-[-0.02em] text-white">
-          Talk to the squad
+          {copy.title}
         </h2>
         <p className="mt-6 max-w-[560px] text-white/70">
-          Pick what you need and your email app opens with the details ready to fill in.
+          {copy.lead}
         </p>
         {discordHref ? (
           <p className="mt-3 text-sm text-white/60">
-            Not an email person?{' '}
+            {copy.discordLead}{' '}
             <a
               href={discordHref}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-1 py-2 text-white underline-offset-4 hover:text-gold-500 hover:underline"
             >
-              Find us on Discord
+              {copy.discordLink}
               <ArrowUpRight
                 size={14}
                 className="text-gold-500 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
@@ -75,7 +50,7 @@ export function ContactSection({ discordUrl, discordSupportUrl }: ContactSection
         ) : null}
 
         <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {TOPICS.map((topic) => (
+          {copy.topics.map((topic) => (
             <a
               key={topic.title}
               href={mailto(topic.subject, topic.body)}
@@ -109,7 +84,7 @@ export function ContactSection({ discordUrl, discordSupportUrl }: ContactSection
           </a>
           <CopyEmailButton email={CONTACT_EMAIL} />
           <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/55">
-            {'// replies in ~3 days'}
+            {copy.replies}
           </span>
         </div>
       </div>

@@ -7,9 +7,13 @@ import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 import { LogOut, Menu, User, UserPlus, X } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { useLang, useLocalizePath, useT } from '@/components/LangProvider'
+import { localizePath, parsePathname } from '@/i18n/utils'
 
 interface NavLink {
-  label: string
+  key: 'home' | 'roster' | 'lobbies' | 'contact'
+  /** Language-less path; hash links are always rooted at "/" so they resolve from any page. */
   href: string
 }
 
@@ -17,13 +21,11 @@ interface NavigationProps {
   discordUrl: string
 }
 
-// Hash links are always rooted at "/" (not the current path) so they resolve
-// correctly from any page, not just the home page itself.
 const LINKS: NavLink[] = [
-  { label: 'Home', href: '/#home' },
-  { label: 'Roster', href: '/#roster' },
-  { label: 'Lobbies', href: '/lobbies' },
-  { label: 'Contact', href: '/#contact' },
+  { key: 'home', href: '/#home' },
+  { key: 'roster', href: '/#roster' },
+  { key: 'lobbies', href: '/lobbies' },
+  { key: 'contact', href: '/#contact' },
 ]
 
 function DiscordIcon() {
@@ -35,7 +37,10 @@ function DiscordIcon() {
 }
 
 export function Navigation({ discordUrl }: NavigationProps) {
-  const pathname = usePathname()
+  const lang = useLang()
+  const d = useT()
+  const localize = useLocalizePath()
+  const { path: pathname } = parsePathname(usePathname())
   const router = useRouter()
   const { data: session, status } = useSession()
   const [active, setActive] = useState('/#home')
@@ -113,7 +118,7 @@ export function Navigation({ discordUrl }: NavigationProps) {
       className="inline-flex items-center gap-2 rounded-lg bg-gold-500 px-4 py-2 font-display text-sm font-extrabold uppercase tracking-wide text-ink-1000 no-underline transition-colors hover:bg-gold-400"
     >
       <DiscordIcon />
-      Meet the squad
+      {d.hero.cta}
     </a>
   )
 
@@ -126,14 +131,14 @@ export function Navigation({ discordUrl }: NavigationProps) {
       className="flex items-center justify-center gap-2 rounded-lg bg-gold-500 px-4 py-3 font-display text-sm font-extrabold uppercase tracking-wide text-ink-1000 no-underline transition-colors hover:bg-gold-400"
     >
       <DiscordIcon />
-      Meet the squad
+      {d.hero.cta}
     </a>
   )
 
   return (
     <header className="sticky top-0 z-20 border-b border-white/10 bg-ink-1000/86 backdrop-blur-md">
-      <div className="flex h-16 items-center gap-7 px-5 sm:px-7">
-        <Link href="/" aria-label="4Hope home" className="flex items-center">
+      <div className="mx-auto flex h-16 w-full max-w-[1200px] items-center gap-7 px-4 md:px-8">
+        <Link href={localize('/')} aria-label={d.a11y.homeLink} className="flex items-center">
           <Image src="/brand/logo.png" alt="4Hope" width={34} height={34} className="h-[34px] w-[34px]" />
         </Link>
 
@@ -142,13 +147,13 @@ export function Navigation({ discordUrl }: NavigationProps) {
             const isActive = isActiveLink(link.href)
             return (
               <a
-                key={link.label}
-                href={link.href}
+                key={link.key}
+                href={localizePath(link.href, lang)}
                 className={`border-b-2 px-3.5 py-2 font-display text-sm font-bold uppercase tracking-[0.04em] no-underline transition-colors ${
                   isActive ? 'border-gold-500 text-white' : 'border-transparent text-white/55 hover:text-white/80'
                 }`}
               >
-                {link.label}
+                {d.nav[link.key]}
               </a>
             )
           })}
@@ -158,11 +163,13 @@ export function Navigation({ discordUrl }: NavigationProps) {
 
         <div className="hidden sm:block">{!isHome && meetTheSquadButton}</div>
 
+        <LanguageSwitcher className="hidden sm:inline-flex" />
+
         {isSignedIn ? (
           <div className="relative" ref={profileMenuRef}>
             <button
               type="button"
-              aria-label="Account menu"
+              aria-label={d.auth.menu.account}
               aria-expanded={profileMenuOpen}
               onClick={() => setProfileMenuOpen((open) => !open)}
               className="flex items-center rounded-full"
@@ -170,45 +177,49 @@ export function Navigation({ discordUrl }: NavigationProps) {
               <Avatar src={displayPhotoURL} name={session?.user?.name ?? ''} size="sm" />
             </button>
             {profileMenuOpen ? (
-              <div className="absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-[10px] border border-white/10 bg-ink-900 py-1 shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
+              <div className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-[14px] border border-white/10 bg-ink-900 py-1 shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
+                <div className="border-b border-white/10 px-4 pb-3 pt-3">
+                  <div className="truncate font-display text-base font-bold text-white">{session?.user?.name}</div>
+                  <div className="truncate text-sm text-white/55">{session?.user?.email}</div>
+                </div>
                 <button
                   type="button"
                   onClick={() => {
                     setProfileMenuOpen(false)
-                    router.push('/profile')
+                    router.push(localize('/profile'))
                   }}
-                  className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm text-white/80 hover:bg-white/10 hover:text-white"
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left font-display text-sm font-bold text-white/85 hover:bg-white/10 hover:text-white"
                 >
                   <User size={16} />
-                  See profile
+                  {d.auth.menu.profile}
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     setProfileMenuOpen(false)
-                    signOut({ callbackUrl: '/login' })
+                    signOut({ callbackUrl: localize('/login') })
                   }}
-                  className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm text-white/80 hover:bg-white/10 hover:text-white"
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left font-display text-sm font-bold text-white/85 hover:bg-white/10 hover:text-white"
                 >
                   <LogOut size={16} />
-                  Sign out
+                  {d.auth.menu.signOut}
                 </button>
               </div>
             ) : null}
           </div>
         ) : (
           <Link
-            href="/login"
+            href={localize('/login')}
             className="hidden items-center gap-1.5 rounded-lg px-2.5 py-2 font-display text-sm font-bold uppercase tracking-[0.04em] text-white/80 transition-colors hover:bg-white/10 hover:text-white sm:flex"
           >
             <UserPlus size={18} />
-            Sign up
+            {d.auth.menu.signUp}
           </Link>
         )}
 
         <button
           type="button"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-label={menuOpen ? d.a11y.closeMenu : d.a11y.openMenu}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
           className="flex h-9 w-9 items-center justify-center rounded-lg text-white sm:hidden"
@@ -223,29 +234,30 @@ export function Navigation({ discordUrl }: NavigationProps) {
             const isActive = isActiveLink(link.href)
             return (
               <a
-                key={link.label}
-                href={link.href}
+                key={link.key}
+                href={localizePath(link.href, lang)}
                 onClick={() => setMenuOpen(false)}
                 className={`rounded-md px-3 py-2 font-display text-sm font-bold uppercase tracking-[0.04em] no-underline transition-colors ${
                   isActive ? 'bg-ink-800 text-white' : 'text-white/55 hover:text-white/80'
                 }`}
               >
-                {link.label}
+                {d.nav[link.key]}
               </a>
             )
           })}
           <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
             {!isSignedIn && (
               <Link
-                href="/login"
+                href={localize('/login')}
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-3 font-display text-sm font-extrabold uppercase tracking-wide text-white no-underline transition-colors hover:bg-white/10"
               >
                 <UserPlus size={18} />
-                Sign up
+                {d.auth.menu.signUp}
               </Link>
             )}
             {meetTheSquadButtonMobile}
+            <LanguageSwitcher className="self-start" />
           </div>
         </div>
       )}
