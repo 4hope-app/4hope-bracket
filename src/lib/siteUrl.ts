@@ -21,5 +21,5 @@ export function isIndexableEnv(): boolean {
 export function getHomeUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_HOME_URL;
   if (explicit) return explicit.replace(/\/$/, "");
-  return process.env.NODE_ENV === "production" ? "https://4hope.app" : "http://localhost:3001";
+  return "https://4hope.app";
 }
