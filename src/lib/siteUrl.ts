@@ -16,3 +16,10 @@ export function getSiteUrl(): string {
 export function isIndexableEnv(): boolean {
   return process.env.APP_ENV === "production";
 }
+
+/** Origin of the home site, which owns the Google login. */
+export function getHomeUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_HOME_URL;
+  if (explicit) return explicit.replace(/\/$/, "");
+  return process.env.NODE_ENV === "production" ? "https://4hope.app" : "http://localhost:3001";
+}
