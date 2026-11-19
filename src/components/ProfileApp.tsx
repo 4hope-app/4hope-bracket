@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { signOut } from 'next-auth/react'
 import {
   Check,
   Crown,
@@ -22,7 +21,7 @@ import { MyLobbiesCard } from '@/components/MyLobbiesCard'
 import { postJson, requestJson } from '@/lib/api'
 import { useLang, useT } from '@/components/LangProvider'
 import { format, localizePath } from '@/i18n/utils'
-import { getHomeUrl } from '@/lib/siteUrl'
+import { getHomeUrl, getLogoutUrl } from '@/lib/siteUrl'
 import { defaultTeamCode, isValidTeamCode, normalizeTeamName } from '@/lib/team'
 
 interface TeamMember {
@@ -746,7 +745,9 @@ export function ProfileApp({
   const [currentTeamCode, setCurrentTeamCode] = useState(teamCode)
   const [currentTeamLogoURL, setCurrentTeamLogoURL] = useState(teamLogoURL)
   const [currentMembers, setCurrentMembers] = useState(members)
-  const onSignOut = () => signOut({ callbackUrl: '/login' })
+  const lang = useLang()
+  // Home owns the session: its /logout page signs out and returns to bracket's home page.
+  const onSignOut = () => window.location.assign(getLogoutUrl(lang, window.location.origin))
 
   const handleTeamSaved = (name: string, code: string, logoURL: string | null) => {
     setCurrentTeamName(name)

@@ -3,13 +3,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 import { LogOut, Menu, User, UserPlus, X } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useLang, useLocalizePath, useT } from '@/components/LangProvider'
 import { localizePath, parsePathname } from '@/i18n/utils'
+import { getLogoutUrl } from '@/lib/siteUrl'
 
 interface NavLink {
   key: 'home' | 'roster' | 'lobbies' | 'contact'
@@ -197,7 +198,8 @@ export function Navigation({ discordUrl }: NavigationProps) {
                   type="button"
                   onClick={() => {
                     setProfileMenuOpen(false)
-                    signOut({ callbackUrl: localize('/login') })
+                    // Home owns the session: its /logout page signs out and returns to bracket's home page.
+                    window.location.assign(getLogoutUrl(lang, window.location.origin))
                   }}
                   className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left font-display text-sm font-bold text-white/85 hover:bg-white/10 hover:text-white"
                 >
